@@ -28,3 +28,8 @@ git clone https://github.com/Krixij/TaskManager.git
 
 ### Обновление кода:
 #### git pull
+
+
+### Admin
+#### Логин: root
+#### Пароль:  root
