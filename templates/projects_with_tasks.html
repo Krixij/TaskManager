@@ -1,0 +1,47 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>TaskManager</title>
+</head>
+<body>
+    <h1>TaskManager</h1>
+
+    <!-- Навигация по проектам -->
+    <div>
+        <strong>Проекты:</strong>
+        {% for project in projects %}
+            <a href="{% url 'taskManager:projects_with_tasks' project.id %}">
+                {{ project.name }}
+            </a>
+            {% if not forloop.last %} | {% endif %}
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    <!-- Содержимое выбранного проекта -->
+    {% if selected_project %}
+        <h2>{{ selected_project.name }}</h2>
+
+        <h3>Задачи ({{ tasks|length }}):</h3>
+
+        {% if tasks %}
+            <ul>
+                {% for task in tasks %}
+                    <li>
+                        <strong>{{ task.title }}</strong>
+                        {% if task.status == "done" %} ✓Выполнена {% elif task.status == "in_progress" %} В работе {% endif %}
+                        {% if task.description %}<br>{{ task.description }}{% endif %}
+                        <br> Кому: {{task.assigned_to}} <br>
+                        От кого: {{task.created_by}} <br>
+                        {{task.created_at|date:"d.m.Y H:i"}}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Нет задач</p>
+        {% endif %}
+
+    {% endif %}
+</body>
+</html>
