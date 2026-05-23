@@ -1,0 +1,76 @@
+{% extends 'layouts/main_layout.html' %}
+
+{% block title %}
+  Мои задачи
+{% endblock %}
+
+{% block page_header %}
+  <header class="page-header">
+    <h1 class="page-title">
+      Мои задачи
+    </h1>
+
+    <a class="button" href="{% url 'tasks:task_create_without_project' %}">
+      Добавить задачу
+    </a>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="content-panel my-tasks-panel" aria-label="Мои задачи">
+    <div class="tasks-section" data-task-section="active">
+      <div class="tasks-section__header">
+        <h2 class="tasks-section__title">
+          Активные
+        </h2>
+
+        <button
+          class="icon-toggle tasks-section__toggle is-expanded"
+          type="button"
+          data-toggle-section="active"
+          aria-label="Скрыть активные задачи"
+          aria-expanded="true"
+        >
+          {% include 'components/chevron_icon.html' %}
+        </button>
+      </div>
+
+      <div class="tasks-section__list">
+        {% for task in active_tasks %}
+          {% include 'components/my_task_card.html' with task=task expanded=forloop.last %}
+        {% empty %}
+          {% include 'components/empty_state.html' with title='Активных задач нет' text='Новые задачи появятся в этом разделе.' %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div
+      class="tasks-section tasks-section--completed is-collapsed"
+      data-task-section="completed"
+    >
+      <div class="tasks-section__header">
+        <h2 class="tasks-section__title">
+          Завершенные
+        </h2>
+
+        <button
+          class="icon-toggle tasks-section__toggle"
+          type="button"
+          data-toggle-section="completed"
+          aria-label="Показать завершенные задачи"
+          aria-expanded="false"
+        >
+          {% include 'components/chevron_icon.html' %}
+        </button>
+      </div>
+
+      <div class="tasks-section__list">
+        {% for task in completed_tasks %}
+          {% include 'components/my_task_card.html' with task=task expanded=False %}
+        {% empty %}
+          {% include 'components/empty_state.html' with title='Завершенных задач нет' %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

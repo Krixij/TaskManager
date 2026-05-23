@@ -1,0 +1,42 @@
+<aside class="sidebar" aria-label="Боковое меню">
+  <div class="sidebar__user">
+    <span class="sidebar__icon" aria-hidden="true">
+      {% include 'components/user_icon.html' with size=32 %}
+    </span>
+
+    <span>
+      Логин
+    </span>
+  </div>
+
+  <nav class="sidebar__nav" aria-label="Основная навигация">
+    <a
+      class="sidebar__link {% if active_page == 'projects' %}is-active{% endif %}"
+      href="#"
+      #изменить заглушку на url
+
+    >
+      <span class="sidebar__icon" aria-hidden="true">
+        {% include 'components/project_icon.html' with size=24 %}
+      </span>
+
+      <span>
+        Проекты
+      </span>
+    </a>
+
+    <a
+      class="sidebar__link {% if active_page == 'my_tasks' %}is-active{% endif %}"
+      href="{% url 'tasks:my_tasks' %}"
+      {% if active_page == 'my_tasks' %}aria-current="page"{% endif %}
+    >
+      <span class="sidebar__icon" aria-hidden="true">
+        {% include 'components/task_icon.html' with size=22 %}
+      </span>
+
+      <span>
+        Мои задачи
+      </span>
+    </a>
+  </nav>
+</aside>

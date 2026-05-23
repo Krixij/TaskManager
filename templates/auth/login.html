@@ -1,0 +1,27 @@
+{% extends 'layouts/auth_layout.html' %}
+
+{% block title %}
+  Вход
+{% endblock %}
+
+{% block auth_content %}
+  <section class="login-card" aria-labelledby="login-title">
+    <h1 class="login-card__title" id="login-title">
+      Вход
+    </h1>
+
+    <form class="form" method="post" novalidate>
+      {% csrf_token %}
+
+      {% include 'includes/form_errors.html' with form=form %}
+
+      {% for field in form %}
+        {% include 'components/field.html' with field=field %}
+      {% endfor %}
+
+      <button class="button button--full" type="submit">
+        Войти
+      </button>
+    </form>
+  </section>
+{% endblock %}

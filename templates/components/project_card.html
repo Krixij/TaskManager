@@ -1,0 +1,9 @@
+<a
+  class="project-card"
+  href="{% url 'taskManager:projects_with_tasks' project.id %}"
+  aria-label="Открыть проект {{ project.title }}"
+>
+  {{ project.title }}
+</a>
+
+#проверить наименования title или name

@@ -1,0 +1,37 @@
+{% load static %}
+
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    {% block title %}
+      TaskManager
+    {% endblock %}
+  </title>
+
+  <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+  <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+  <link rel="stylesheet" href="{% static 'css/global.css' %}">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'css/pages.css' %}">
+
+  {% block extra_css %}
+  {% endblock %}
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+  {% include 'includes/messages.html' %}
+
+  {% block body %}
+  {% endblock %}
+
+  <script src="{% static 'js/main.js' %}"></script>
+  <script src="{% static 'js/accordion.js' %}"></script>
+  <script src="{% static 'js/forms.js' %}"></script>
+
+  {% block extra_js %}
+  {% endblock %}
+</body>
+</html>

@@ -1,0 +1,21 @@
+<article class="task-card">
+  <div class="task-card__content">
+    <h2 class="task-card__title">
+      {{ task.title }}
+    </h2>
+
+    {% if show_executor %}
+      <p class="task-card__executor">
+        {% if task.executor %}
+          {{ task.executor.username }}
+        {% else %}
+          Исполнитель не назначен
+        {% endif %}
+      </p>
+    {% endif %}
+
+    <div class="task-card__description">
+      {{ task.description }}
+    </div>
+  </div>
+</article>

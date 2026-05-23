@@ -1,0 +1,45 @@
+{% extends 'layouts/main_layout.html' %}
+
+{% block title %}
+  {% if object %}
+    Редактировать проект
+  {% else %}
+    Добавить проект
+  {% endif %}
+{% endblock %}
+
+{% block page_header %}
+  <header class="page-header">
+    <h1 class="page-title">
+      {% if object %}
+        Редактировать проект
+      {% else %}
+        Добавить проект
+      {% endif %}
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="content-panel">
+    <form class="form" method="post" novalidate>
+      {% csrf_token %}
+
+      {% include 'includes/form_errors.html' with form=form %}
+
+      {% for field in form %}
+        {% include 'components/field.html' with field=field %}
+      {% endfor %}
+
+      <div class="form-actions">
+        <a class="button" href="{% url 'projects:project_list' %}">
+          Отмена
+        </a>
+
+        <button class="button" type="submit">
+          Сохранить
+        </button>
+      </div>
+    </form>
+  </section>
+{% endblock %}

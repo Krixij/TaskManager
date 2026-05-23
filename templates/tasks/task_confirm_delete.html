@@ -1,0 +1,31 @@
+{% extends 'layouts/main_layout.html' %}
+
+{% block title %}
+  Удалить задачу
+{% endblock %}
+
+{% block page_header %}
+  <header class="page-header">
+    <h1 class="page-title">
+      Удалить задачу
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="content-panel">
+    <form class="form" method="post">
+      {% csrf_token %}
+
+      <p>
+        Вы уверены, что хотите удалить задачу «{{ object }}»?
+      </p>
+
+      <div class="form-actions">
+        <button class="button" type="submit">
+          Удалить
+        </button>
+      </div>
+    </form>
+  </section>
+{% endblock %}

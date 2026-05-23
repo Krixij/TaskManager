@@ -1,0 +1,109 @@
+.projects-panel,
+.tasks-panel,
+.my-tasks-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.my-tasks-panel {
+  min-height: 745px;
+  padding: 0 36px 32px;
+}
+
+.tasks-section {
+  width: 100%;
+}
+
+.tasks-section + .tasks-section {
+  margin-top: 22px;
+}
+
+.tasks-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 68px;
+}
+
+.tasks-section__title {
+  margin-bottom: 0;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.tasks-section__list {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4px;
+}
+
+.tasks-section.is-collapsed .tasks-section__list {
+  display: none;
+}
+
+.tasks-section--completed {
+  min-height: 64px;
+  padding: 0 8px;
+  border-radius: var(--radius-md);
+  background: var(--color-panel-bg);
+}
+
+.tasks-section--completed .task-card {
+  opacity: .82;
+}
+
+.login-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  background: var(--color-page-bg);
+}
+
+.login-card {
+  width: min(100%, 460px);
+  padding: 36px;
+  border-radius: var(--radius-lg);
+  background: var(--color-panel-bg);
+}
+
+.login-card__title {
+  margin-bottom: 28px;
+  font-size: 36px;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .my-tasks-panel {
+    padding: 0 20px 24px;
+  }
+
+  .tasks-section__title {
+    font-size: 24px;
+  }
+
+  .icon-toggle {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (max-width: 480px) {
+  .my-tasks-panel {
+    padding: 0 14px 18px;
+  }
+
+  .tasks-section__title {
+    font-size: 22px;
+  }
+
+  .login-card {
+    padding: 24px;
+  }
+
+  .login-card__title {
+    font-size: 30px;
+  }
+}
