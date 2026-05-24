@@ -1,9 +1,8 @@
 <a
   class="project-card"
-  href="{% url 'taskManager:projects_with_tasks' project.id %}"
+  href="{% url 'tasks:project_detail' project.id %}"
   aria-label="Открыть проект {{ project.title }}"
 >
-  {{ project.title }}
+  {{ project.name }}
 </a>
 
-#проверить наименования title или name

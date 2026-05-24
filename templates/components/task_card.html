@@ -6,8 +6,8 @@
 
     {% if show_executor %}
       <p class="task-card__executor">
-        {% if task.executor %}
-          {{ task.executor.username }}
+        {% if task.assigned_to %}
+          {{ task.assigned_to.username }}
         {% else %}
           Исполнитель не назначен
         {% endif %}

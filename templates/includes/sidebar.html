@@ -5,14 +5,18 @@
     </span>
 
     <span>
-      Логин
+      <!-- Заменил на имя пользователя -->
+      {{ user.username }}
+
     </span>
+
   </div>
+
 
   <nav class="sidebar__nav" aria-label="Основная навигация">
     <a
       class="sidebar__link {% if active_page == 'projects' %}is-active{% endif %}"
-      href="#"
+      href="{% url 'tasks:project_list' %}"
       #изменить заглушку на url
 
     >
@@ -39,4 +43,9 @@
       </span>
     </a>
   </nav>
+  <a class="sidebar__link" href="{% url 'tasks:logout' %}" style="margin-top: 20px;">
+      <span class="sidebar__icon" aria-hidden="true">
+      </span>
+      <span>Выйти</span>
+    </a>
 </aside>

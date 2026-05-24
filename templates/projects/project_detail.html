@@ -7,17 +7,11 @@
 {% block page_header %}
   <header class="page-header">
     <h1 class="page-title">
-      <a class="breadcrumb-link" href="{% url 'projects:project_list' %}">
+      <a class="breadcrumb-link" href="{% url 'tasks:project_list' %}">
         Проекты
       </a>
-
-      <span aria-hidden="true">
-        &gt;
-      </span>
-
-      <span>
-        {{ project.title }}
-      </span>
+      <span aria-hidden="true">&gt;</span>
+      <span>{{ project.name }}</span>
     </h1>
 
     <a class="button" href="{% url 'tasks:task_create' project.pk %}">
