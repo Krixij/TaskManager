@@ -18,7 +18,15 @@ class CustomLoginView(LoginView):
 # Главная - список проектов
 @login_required
 def project_list(request):
-    projects = Project.objects.filter(created_by=request.user)
+    # Проекты из групп пользователя
+    user_groups = request.user.participant_groups.all()
+    group_projects = Project.objects.filter(group__in=user_groups)
+
+    # Проекты, созданные пользователем
+    user_projects = Project.objects.filter(created_by=request.user)
+
+    # Объединяем и убираем дубликаты
+    projects = (group_projects | user_projects).distinct()
     return render(request, 'projects/project_list.html', {'object_list': projects})
 
 

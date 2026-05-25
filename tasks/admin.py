@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Project, Task
+from .models import Project, Task, GroupPeople
 
 #НАстройка отображения пользователей в админке
 class CustomUserAdmin(UserAdmin):
@@ -11,6 +11,46 @@ class CustomUserAdmin(UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
+# Админка для групп людей
+@admin.register(GroupPeople)
+class GroupPeopleAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'get_participant_count', 'created_by', 'created_at']
+    list_filter = ['created_by', 'created_at']
+    search_fields = ['title']
+    filter_horizontal = ('participant',)
+
+    readonly_fields = ['created_at']
+
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('title',),
+        }),
+        ('Участники', {
+            'fields': ('participant',),
+            'description': 'Выберите пользователей, которые будут входить в группу'
+        }),
+        ('Системная информация', {
+            'fields': ('created_by', 'created_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def get_participant_count(self, obj):
+        """Отображает количество участников в группе"""
+        return obj.participant.count()
+
+    get_participant_count.short_description = 'Кол-во участников'
+    get_participant_count.admin_order_field = 'participant__count'
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+    def get_queryset(self, request):
+        """Оптимизация запроса с подсчетом участников"""
+        return super().get_queryset(request).prefetch_related('participant')
+
 #Админка для проектов
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
@@ -18,6 +58,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ['created_by', 'created_at']
     search_fields = ['name']
     readonly_fields = ['created_at']
+    raw_id_fields = ['group']
 
     def save_model(self, request, obj, form, change):
         if not change:
