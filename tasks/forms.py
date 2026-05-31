@@ -5,12 +5,14 @@ from .models import Project, Task
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['name']
+        fields = ['name', 'group']
         labels = {
             'name': 'Название проекта',
         }
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-field__input'}),
+            'group': forms.Select(attrs={'class': 'form-field__input'}),
+
         }
 
 

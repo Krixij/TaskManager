@@ -82,6 +82,7 @@ def project_delete(request, pk):
 def my_tasks(request):
     active_tasks = Task.objects.filter(assigned_to=request.user, status='in_progress')
     completed_tasks = Task.objects.filter(assigned_to=request.user, status='done')
+
     return render(request, 'tasks/my_tasks.html', {
         'active_tasks': active_tasks,
         'completed_tasks': completed_tasks,
@@ -92,7 +93,7 @@ def my_tasks(request):
 @login_required
 def task_create(request, project_pk):
     project = get_object_or_404(Project, pk=project_pk)
-
+    project_participants = project.group.participant.all()
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
@@ -104,9 +105,7 @@ def task_create(request, project_pk):
     else:
         form = TaskForm()
         # Ограничиваем выбор исполнителя только участниками проекта
-        form.fields['assigned_to'].queryset = User.objects.filter(
-            created_projects=project
-        ) | User.objects.filter(id=request.user.id)
+        form.fields['assigned_to'].queryset = project_participants | User.objects.filter(id=request.user.id)
 
     return render(request, 'tasks/task_form.html', {'form': form, 'project': project})
 

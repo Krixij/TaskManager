@@ -7,7 +7,7 @@
     {% if show_executor %}
       <p class="task-card__executor">
         {% if task.assigned_to %}
-          {{ task.assigned_to.username }}
+          Исполнитель: {{ task.assigned_to.username }}
         {% else %}
           Исполнитель не назначен
         {% endif %}
@@ -15,6 +15,7 @@
     {% endif %}
 
     <div class="task-card__description">
+      Описание:
       {{ task.description }}
     </div>
   </div>
