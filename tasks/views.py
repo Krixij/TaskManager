@@ -77,11 +77,11 @@ def project_delete(request, pk):
     return render(request, 'projects/project_confirm_delete.html', {'object': project})
 
 
-# Мои задачи
+# Мои задачи (добавлен select_related для отбора всех проектов сразу за один запрос к БД)
 @login_required
 def my_tasks(request):
-    active_tasks = Task.objects.filter(assigned_to=request.user, status='in_progress')
-    completed_tasks = Task.objects.filter(assigned_to=request.user, status='done')
+    active_tasks = Task.objects.filter(assigned_to=request.user, status='in_progress').select_related('project')
+    completed_tasks = Task.objects.filter(assigned_to=request.user, status='done').select_related('project')
 
     return render(request, 'tasks/my_tasks.html', {
         'active_tasks': active_tasks,

@@ -20,5 +20,13 @@
 
   <div class="task-card__description">
     {{ task.description }}
+    {% if show_project %}
+      <p class="task-card__executor">
+
+          <a href="{% url 'tasks:project_detail' task.project.pk %}">
+                    Проект: {{ task.project.name }}
+                </a>
+      </p>
+    {% endif %}
   </div>
 </article>

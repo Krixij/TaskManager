@@ -37,7 +37,9 @@
 
       <div class="tasks-section__list">
         {% for task in active_tasks %}
-          {% include 'components/my_task_card.html' with task=task expanded=forloop.last %}
+
+          {% include 'components/my_task_card.html' with task=task show_project=True expanded=forloop.last  %}
+
         {% empty %}
           {% include 'components/empty_state.html' with title='Активных задач нет' text='Новые задачи появятся в этом разделе.' %}
         {% endfor %}
@@ -66,7 +68,7 @@
 
       <div class="tasks-section__list">
         {% for task in completed_tasks %}
-          {% include 'components/my_task_card.html' with task=task expanded=False %}
+          {% include 'components/my_task_card.html' with task=task show_project=True expanded=False %}
         {% empty %}
           {% include 'components/empty_state.html' with title='Завершенных задач нет' %}
         {% endfor %}
