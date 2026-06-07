@@ -1,8 +1,21 @@
-<article class="task-card">
+<article class="task-card task-card--with-delete">
   <div class="task-card__content">
-    <h2 class="task-card__title">
-      {{ task.title }}
-    </h2>
+    <div class="task-card__header">
+      <h2 class="task-card__title">
+        {{ task.title }}
+      </h2>
+
+      <button
+        class="task-card__delete-button"
+        type="button"
+        aria-label="Удалить задачу {{ task.title }}"
+        data-delete-open
+        data-delete-title="задачу «{{ task.title }}»"
+        data-delete-url="{% url 'tasks:task_delete' task.id %}"
+      >
+        {% include 'components/trash_icon.html' %}
+      </button>
+    </div>
 
     {% if show_executor %}
       <p class="task-card__executor">
@@ -13,6 +26,7 @@
         {% endif %}
       </p>
     {% endif %}
+
     <p class="task-card__executor">
       Статус: {{ task.get_status_display }}
     </p>

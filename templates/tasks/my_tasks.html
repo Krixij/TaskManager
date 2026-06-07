@@ -9,10 +9,11 @@
     <h1 class="page-title">
       Мои задачи
     </h1>
-
+  {% comment %}
     <a class="button" href="#">
       Добавить задачу
     </a>
+    {% endcomment %}
   </header>
 {% endblock %}
 
@@ -75,4 +76,7 @@
       </div>
     </div>
   </section>
+
+ {% include 'components/delete_confirm_modal.html' %}
+
 {% endblock %}

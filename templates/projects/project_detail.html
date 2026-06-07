@@ -28,4 +28,7 @@
       {% include 'components/empty_state.html' with title='Задачи пока не добавлены' text='Нажмите «Добавить задачу», чтобы создать первую задачу в проекте.' %}
     {% endfor %}
   </section>
+
+ {% include 'components/delete_confirm_modal.html' %}
+
 {% endblock %}

@@ -55,7 +55,7 @@
   padding:12px 16px;
   border-radius:var(--radius-lg);
   background:var(--color-button-bg);
-  color:var(--color-text);
+  color:#fff;
   font-size:28px;
   line-height:1;
   white-space:nowrap;
@@ -380,5 +380,256 @@
 
   .task-card__description {
     font-size:16px
+  }
+}
+
+
+
+.project-card--with-delete {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+}
+
+.project-card--with-delete:hover {
+  transform:translateY(-2px)
+}
+
+.project-card__link {
+  display:flex;
+  align-items:center;
+  flex:1 1 auto;
+  align-self:stretch;
+  min-width:0;
+  color:inherit;
+  text-decoration:none
+}
+
+.project-card__delete-form {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  margin:0;
+  margin-left:auto
+}
+
+.project-card__delete-button {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  padding:7px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#000;
+  transition:background-color var(--transition-base),transform var(--transition-base),opacity var(--transition-base)
+}
+
+.project-card__delete-button:hover {
+  background:rgba(0,0,0,.06)
+}
+
+.project-card__delete-button:active {
+  transform:scale(.94)
+}
+
+.project-card__delete-button svg {
+  width:30px;
+  height:30px;
+  flex-shrink:0
+}
+
+.project-card__delete-button:hover svg path {
+  stroke:#d92d20
+}
+.projects-panel .project-card--with-delete {
+  width:100%;
+}
+
+.projects-panel .project-card__link {
+  width:100%;
+}
+
+.sidebar__user,
+.sidebar__link,
+.sidebar__icon {
+  color:#ffffff
+}
+
+
+
+.task-card__header {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px
+}
+
+.task-card__summary-actions {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0
+}
+
+.task-card__delete-form {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  margin:0
+}
+
+.task-card__delete-button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  padding:6px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:var(--color-text);
+  transition:background-color var(--transition-base),transform var(--transition-base)
+}
+
+.task-card__delete-button:hover {
+  background:rgba(0,0,0,.06)
+}
+
+.task-card__delete-button:active {
+  transform:scale(.94)
+}
+
+.task-card__delete-button svg {
+  width:26px;
+  height:26px;
+  flex-shrink:0
+}
+
+.task-card__delete-button:hover svg path {
+  stroke:var(--color-danger)
+}
+
+.task-card__header .task-card__title {
+  margin-bottom:2px
+}
+
+.my-tasks-panel .task-card__summary .task-card__title {
+  flex:1;
+  min-width:0
+}
+
+/* Delete confirmation modal */
+
+.delete-modal[hidden] {
+  display:none
+}
+
+.delete-modal {
+  position:fixed;
+  inset:0;
+  z-index:3000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px
+}
+
+.delete-modal__overlay {
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.35)
+}
+
+.delete-modal__window {
+  position:relative;
+  z-index:1;
+  width:min(100%,480px);
+  padding:32px;
+  border-radius:var(--radius-md);
+  background:var(--color-card-bg);
+  box-shadow:0 24px 70px rgba(0,0,0,.25)
+}
+
+.delete-modal__title {
+  margin-bottom:16px;
+  color:var(--color-text);
+  font-size:30px;
+  font-weight:700
+}
+
+.delete-modal__text {
+  margin-bottom:10px;
+  color:var(--color-text);
+  font-size:20px;
+  line-height:1.35
+}
+
+.delete-modal__warning {
+  margin-bottom:28px;
+  color:var(--color-danger);
+  font-size:18px;
+  line-height:1.35
+}
+
+.delete-modal__actions {
+  display:flex;
+  justify-content:flex-end;
+  gap:12px
+}
+
+.delete-modal__button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  padding:10px 20px;
+  border:0;
+  border-radius:var(--radius-sm);
+  font-size:18px;
+  font-weight:700;
+  cursor:pointer;
+  transition:background-color var(--transition-base),transform var(--transition-base),opacity var(--transition-base)
+}
+
+.delete-modal__button:active {
+  transform:scale(.98)
+}
+
+.delete-modal__button--cancel {
+  background:var(--color-button-bg);
+  color:#fff
+}
+
+.delete-modal__button--cancel:hover {
+  background:var(--color-button-hover)
+}
+
+.delete-modal__button--danger {
+  background:var(--color-danger);
+  color:#fff
+}
+
+.delete-modal__button--danger:hover {
+  opacity:.85
+}
+
+@media(max-width:480px) {
+  .delete-modal__window {
+    padding:24px
+  }
+
+  .delete-modal__actions {
+    flex-direction:column
+  }
+
+  .delete-modal__button {
+    width:100%
   }
 }
