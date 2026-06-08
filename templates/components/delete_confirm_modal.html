@@ -1,0 +1,39 @@
+<div class="delete-modal" data-delete-modal hidden>
+  <div class="delete-modal__overlay" data-delete-modal-close></div>
+
+  <div class="delete-modal__window" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+    <h2 class="delete-modal__title" id="delete-modal-title">
+      Подтвердите удаление
+    </h2>
+
+    <p class="delete-modal__text">
+      Вы действительно хотите удалить
+      <strong data-delete-modal-object></strong>?
+    </p>
+
+    <p class="delete-modal__warning">
+      Это действие нельзя будет отменить.
+    </p>
+
+    <form class="delete-modal__form" method="post" data-delete-modal-form>
+      {% csrf_token %}
+
+      <div class="delete-modal__actions">
+        <button
+          class="delete-modal__button delete-modal__button--cancel"
+          type="button"
+          data-delete-modal-close
+        >
+          Отмена
+        </button>
+
+        <button
+          class="delete-modal__button delete-modal__button--danger"
+          type="submit"
+        >
+          Удалить
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

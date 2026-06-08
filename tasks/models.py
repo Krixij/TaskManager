@@ -1,6 +1,31 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+#Модель для группы людей
+class GroupPeople(models.Model):
+    title = models.CharField(max_length=200, verbose_name='Название')
+    participant = models.ManyToManyField(
+        User,
+        blank=True,
+        related_name='participant_groups',
+        verbose_name='Участник'
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='created_groups',
+        verbose_name='Создатель группы'
+    )
+    def __str__(self):
+        return self.title
+    class Meta:
+        verbose_name = 'Группа'
+        verbose_name_plural = 'Группы'
+        ordering = ['-created_at']
+
+
 #Модель для проектов
 class Project(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название проекта')
@@ -11,6 +36,13 @@ class Project(models.Model):
         null=True,
         related_name='created_projects',
         verbose_name='Создатель'
+    )
+    group = models.ForeignKey(
+        GroupPeople,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='group_projects',
+        verbose_name='Группа'
     )
 
     def __str__(self):

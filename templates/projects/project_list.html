@@ -1,0 +1,32 @@
+{% extends 'layouts/main_layout.html' %}
+
+{% block title %}
+  Проекты
+{% endblock %}
+
+{% block page_header %}
+  <header class="page-header">
+    <h1 class="page-title">
+      Проекты
+    </h1>
+
+    <a class="button" href="{% url 'tasks:project_create' %}">
+      Добавить проект
+    </a>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="content-panel projects-panel" aria-label="Список проектов">
+    {% for project in object_list %}
+      {% include 'components/project_card.html' with project=project %}
+    {% empty %}
+      {% include 'components/empty_state.html' with title='Проекты пока не добавлены' text='Нажмите «Добавить проект», чтобы создать первый проект.' %}
+    {% endfor %}
+  </section>
+
+  {% include 'includes/pagination.html' %}
+
+  {% include 'components/delete_confirm_modal.html' %}
+
+{% endblock %}
