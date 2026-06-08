@@ -1,0 +1,20 @@
+<article class="project-card project-card--with-delete">
+  <a
+    class="project-card__link"
+    href="{% url 'tasks:project_detail' project.id %}"
+    aria-label="Открыть проект {{ project.name }}"
+  >
+    {{ project.name }}
+  </a>
+
+  <button
+    class="project-card__delete-button"
+    type="button"
+    aria-label="Удалить проект {{ project.name }}"
+    data-delete-open
+    data-delete-title="проект «{{ project.name }}»"
+    data-delete-url="{% url 'tasks:project_delete' project.id %}"
+  >
+    {% include 'components/trash_icon.html' %}
+  </button>
+</article>

@@ -1,0 +1,45 @@
+<article
+  class="task-card task-card--my-task task-card--collapsible {% if expanded %}is-expanded{% else %}is-collapsed{% endif %}"
+  data-task-card="{{ task.pk }}"
+>
+  <div class="task-card__summary">
+    <h3 class="task-card__title">
+      {{ task.title }}
+    </h3>
+
+    <div class="task-card__summary-actions">
+      <button
+        class="task-card__delete-button"
+        type="button"
+        aria-label="Удалить задачу {{ task.title }}"
+        data-delete-open
+        data-delete-title="задачу «{{ task.title }}»"
+        data-delete-url="{% url 'tasks:task_delete' task.id %}"
+      >
+        {% include 'components/trash_icon.html' %}
+      </button>
+
+      <button
+        class="icon-toggle task-card__toggle {% if expanded %}is-expanded{% endif %}"
+        type="button"
+        data-toggle-task="{{ task.pk }}"
+        aria-label="{% if expanded %}Скрыть описание задачи{% else %}Показать описание задачи{% endif %}"
+        aria-expanded="{% if expanded %}true{% else %}false{% endif %}"
+      >
+        {% include 'components/chevron_icon.html' %}
+      </button>
+    </div>
+  </div>
+
+  <div class="task-card__description">
+    {{ task.description }}
+
+    {% if show_project %}
+      <p class="task-card__executor">
+        <a href="{% url 'tasks:project_detail' task.project.pk %}">
+          Проект: {{ task.project.name }}
+        </a>
+      </p>
+    {% endif %}
+  </div>
+</article>

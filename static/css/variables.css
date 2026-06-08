@@ -1,0 +1,25 @@
+:root {
+  --color-white: #fff;
+  --color-black: #000;
+  --color-text: #111;
+  --color-text-muted: #3a3a3a;
+  --color-danger: #b42318;
+  --color-success: #027a48;
+  --color-page-bg: #fff;
+  --color-sidebar-bg: #123D6A;
+  --color-panel-bg: #ECE2DC;
+  --color-card-bg: #fff;
+  --color-button-bg: #123D6A;
+  --color-button-hover: #195490;
+  --color-input-border: #bdbdbd;
+  --color-focus: #111;
+  --font-main: Arial, Helvetica, sans-serif;
+  --font-size-md: 24px;
+  --font-size-xl: 36px;
+  --sidebar-width: 285px;
+  --content-max-width: 1580px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --transition-base: .2s ease;
+}

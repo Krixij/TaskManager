@@ -1,0 +1,35 @@
+{% extends 'layouts/main_layout.html' %}
+
+{% block title %}
+  Удалить проект
+{% endblock %}
+
+{% block page_header %}
+  <header class="page-header">
+    <h1 class="page-title">
+      Удалить проект
+    </h1>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="content-panel">
+    <form class="form" method="post">
+      {% csrf_token %}
+
+      <p>
+        Вы уверены, что хотите удалить проект «{{ object }}»?
+      </p>
+
+      <div class="form-actions">
+        <a class="button" href="{% url 'projects:project_detail' object.pk %}">
+          Отмена
+        </a>
+
+        <button class="button" type="submit">
+          Удалить
+        </button>
+      </div>
+    </form>
+  </section>
+{% endblock %}
