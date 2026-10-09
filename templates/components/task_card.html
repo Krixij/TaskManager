@@ -5,6 +5,12 @@
         {{ task.title }}
       </h2>
 
+      <a class="project-card__delete-button"
+         href="{% url 'tasks:task_edit' task.id %}"
+         aria-label="Редактировать задачу {{ task.title }}">
+          редактировать
+      </a>
+
       <button
         class="task-card__delete-button"
         type="button"
