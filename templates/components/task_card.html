@@ -31,6 +31,10 @@
       Статус: {{ task.get_status_display }}
     </p>
 
+    <p class="task-card__executor">
+      Приоритет: {{ task.get_priority_display }}
+    </p>
+
     <div class="task-card__description">
       Описание:
       {{ task.description }}

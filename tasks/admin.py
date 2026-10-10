@@ -56,7 +56,7 @@ class GroupPeopleAdmin(admin.ModelAdmin):
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'created_by', 'created_at']
     list_filter = ['created_by', 'created_at']
-    search_fields = ['name']
+    search_fields = ['name', 'description']
     readonly_fields = ['created_at']
     raw_id_fields = ['group']
 
@@ -68,9 +68,9 @@ class ProjectAdmin(admin.ModelAdmin):
 #Админка дял задач
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'project', 'status', 'assigned_to', 'created_at']
-    list_filter = ['project', 'status']
-    search_fields = ['title']
+    list_display = ['id', 'title', 'project', 'status', 'priority', 'assigned_to', 'created_at']
+    list_filter = ['project', 'status', 'priority', 'assigned_to', 'created_at']
+    search_fields = ['title', 'description']
     list_editable = ['status', 'assigned_to']
     readonly_fields = ['created_at', 'created_by']
 
@@ -84,7 +84,7 @@ class TaskAdmin(admin.ModelAdmin):
             'fields': ('title', 'description', 'project'),
         }),
         ('Статус и назначение', {
-            'fields': ('status', 'assigned_to'),
+            'fields': ('status', 'priority', 'assigned_to'),
         }),
         ('Системная информация', {
             'fields': ('created_by', 'created_at'),

@@ -29,6 +29,7 @@ class GroupPeople(models.Model):
 #Модель для проектов
 class Project(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название проекта')
+    description = models.TextField(blank=True, verbose_name='Описание')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     created_by = models.ForeignKey(
         User,
@@ -59,6 +60,11 @@ class Task(models.Model):
         ('in_progress', 'В работе'),
         ('done', 'Выполнено'),
     ]
+    PRIORITY_CHOICES = [
+        ('low', 'Низкий'),
+        ('medium', 'Средний'),
+        ('high', 'Высокий'),
+    ]
     title = models.CharField(max_length=200, verbose_name='Название')
     description = models.TextField(blank=True, verbose_name='Описание')
     status = models.CharField(
@@ -66,6 +72,12 @@ class Task(models.Model):
         choices=STATUS_CHOICES,
         default='in_progress',
         verbose_name='Статус'
+    )
+    priority = models.CharField(
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        default='medium',
+        verbose_name='Приоритет'
     )
     project = models.ForeignKey(
         Project,
