@@ -5,22 +5,26 @@
         {{ task.title }}
       </h2>
 
-      <a class="project-card__delete-button"
-         href="{% url 'tasks:task_edit' task.id %}"
-         aria-label="Редактировать задачу {{ task.title }}">
-          редактировать
-      </a>
+      {% if task.created_by == user or task.assigned_to == user %}
+        <a class="project-card__delete-button"
+           href="{% url 'tasks:task_edit' task.id %}"
+           aria-label="Редактировать задачу {{ task.title }}">
+            ✎
+        </a>
+      {% endif %}
 
-      <button
-        class="task-card__delete-button"
-        type="button"
-        aria-label="Удалить задачу {{ task.title }}"
-        data-delete-open
-        data-delete-title="задачу «{{ task.title }}»"
-        data-delete-url="{% url 'tasks:task_delete' task.id %}"
-      >
-        {% include 'components/trash_icon.html' %}
-      </button>
+      {% if task.created_by == user %}
+        <button
+          class="task-card__delete-button"
+          type="button"
+          aria-label="Удалить задачу {{ task.title }}"
+          data-delete-open
+          data-delete-title="задачу «{{ task.title }}»"
+          data-delete-url="{% url 'tasks:task_delete' task.id %}"
+        >
+          {% include 'components/trash_icon.html' %}
+        </button>
+      {% endif %}
     </div>
 
     {% if show_executor %}

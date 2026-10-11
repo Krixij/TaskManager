@@ -10,9 +10,11 @@
       Проекты
     </h1>
 
+    {% if user.profile.role == 'manager' %}
     <a class="button" href="{% url 'tasks:project_create' %}">
       Добавить проект
     </a>
+    {% endif %}
   </header>
 {% endblock %}
 
@@ -21,7 +23,11 @@
     {% for project in object_list %}
       {% include 'components/project_card.html' with project=project %}
     {% empty %}
-      {% include 'components/empty_state.html' with title='Проекты пока не добавлены' text='Нажмите «Добавить проект», чтобы создать первый проект.' %}
+      {% if user.profile.role == 'manager' %}
+        {% include 'components/empty_state.html' with title='Проекты пока не добавлены' text='Нажмите «Добавить проект», чтобы создать первый проект.' %}
+      {% else %}
+        {% include 'components/empty_state.html' with title='Проектов пока нет' text='Обратитесь к руководителю, чтобы вас добавили в группу.' %}
+      {% endif %}
     {% endfor %}
   </section>
 

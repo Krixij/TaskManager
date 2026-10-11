@@ -32,6 +32,7 @@
       {% endfor %}
 
       <div class="form-actions">
+        <a class="button" href="{% url 'tasks:project_detail' project.pk %}">Отмена</a>
         <button class="button" type="submit">
           Сохранить
         </button>
