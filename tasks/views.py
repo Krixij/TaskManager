@@ -223,3 +223,7 @@ def task_delete(request, pk):
 def logout_view(request):
     logout(request)
     return redirect('tasks:login')
+
+#тест календарь
+def calendar_view(request):
+    return render(request, "calendar/calendar.html")

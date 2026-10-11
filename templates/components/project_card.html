@@ -13,7 +13,7 @@
       href="{% url 'tasks:project_edit' project.id %}"
       aria-label="Редактировать проект {{ project.name }}"
     >
-      ✎
+      {% include 'components/edit_icon.html' %}
     </a>
 
     <button
