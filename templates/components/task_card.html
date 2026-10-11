@@ -1,4 +1,4 @@
-<article class="task-card task-card--with-delete">
+<article class="task-card task-card--with-delete" id="task-{{ task.id }}">
   <div class="task-card__content">
     <div class="task-card__header">
   <h2 class="task-card__title">
@@ -48,7 +48,14 @@
     {% endif %}
 
     <p class="task-card__executor">
-      Статус: {{ task.get_status_display }}
+        Статус: {{ task.get_status_display }}<br>
+        {% if task.due_date %}
+          До: {{ task.due_date }}
+        {% endif %}
+    </p>
+
+      <p class="task-card__executor">
+
     </p>
 
     <div class="task-card__description">

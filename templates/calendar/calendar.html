@@ -1,83 +1,64 @@
 {% extends 'layouts/main_layout.html' %}
 
-{% block title %}
-  Календарь
-{% endblock %}
+{% block title %}Календарь{% endblock %}
 
 {% block page_header %}
   <header class="calendar-header">
-    <h1 class="page-title">
-      Календарь
-    </h1>
+    <h1 class="page-title">Календарь</h1>
 
     <div class="calendar-navigation">
-      <a class="calendar-navigation__button" href="#" aria-label="Предыдущая неделя">
-        «
-      </a>
+      <a class="calendar-navigation__button"
+         href="?start={{ prev_week|date:'Y-m-d' }}"
+         aria-label="Предыдущая неделя">«</a>
 
       <strong class="calendar-navigation__range">
-        -
+        {{ start_date|date:'d.m.Y' }} - {{ end_date|date:'d.m.Y' }}
       </strong>
 
-      <a class="calendar-navigation__button" href="#" aria-label="Следующая неделя">
-        »
-      </a>
+      <a class="calendar-navigation__button"
+         href="?start={{ next_week|date:'Y-m-d' }}"
+         aria-label="Следующая неделя">»</a>
     </div>
+
+    <a class="button" href="?start={{ today|date:'Y-m-d' }}">Сегодня</a>
   </header>
 {% endblock %}
 
 {% block content %}
   <section class="calendar">
     <div class="calendar__grid">
-      <article class="calendar__day">
-        <h2 class="calendar__day-title">Понедельник</h2>
-      </article>
+      {% for day in days %}
+        <article class="calendar__day{% if day.is_today %} calendar__day--today{% endif %}">
+          <h2 class="calendar__day-title">
+            <span class="calendar__day-name">{{ day.name }}</span>
+            <span class="calendar__day-date">{{ day.date|date:'d.m' }}</span>
 
-      <article class="calendar__day">
-        <h2 class="calendar__day-title">Вторник</h2>
-      </article>
+            {% if day.tasks %}
+              <span class="calendar__day-count {% if day.tasks|length > 10 %}calendar__day-count--many{% endif %}" aria-label="Количество задач">
+                {% if day.tasks|length > 99 %}
+                  99+
+                {% else %}
+                  {{ day.tasks|length}}
+                {% endif %}
+              </span>
+            {% endif %}
+          </h2>
 
-      <article class="calendar__day">
-        <h2 class="calendar__day-title">Среда</h2>
-
-        <div class="calendar__tasks">
-          <a class="calendar-task" href="#">
-            <span class="task-priority task-priority--low"></span>
-            <span class="calendar-task__title">Низкий</span>
-          </a>
-
-          <a class="calendar-task" href="#">
-            <span class="task-priority task-priority--medium"></span>
-            <span class="calendar-task__title">Средний</span>
-          </a>
-
-          <a class="calendar-task" href="#">
-            <span class="task-priority task-priority--high"></span>
-            <span class="calendar-task__title">Высокий</span>
-          </a>
-
-          <a class="calendar-task" href="#">
-            <span class="task-priority task-priority--critical"></span>
-            <span class="calendar-task__title">Критичный</span>
-          </a>
-        </div>
-      </article>
-
-      <article class="calendar__day">
-        <h2 class="calendar__day-title">Четверг</h2>
-      </article>
-
-      <article class="calendar__day">
-        <h2 class="calendar__day-title">Пятница</h2>
-      </article>
-
-      <article class="calendar__day">
-        <h2 class="calendar__day-title">Суббота</h2>
-      </article>
-
-      <article class="calendar__day">
-        <h2 class="calendar__day-title">Воскресенье</h2>
-      </article>
+          <div class="calendar__tasks">
+            {% for task in day.tasks %}
+              <a class="calendar-task"
+                 href="{% url 'tasks:project_detail' task.project.id %}#task-{{ task.id }}"
+                 title="{{ task.project.name }} — {{ task.title }}">
+                <span class="task-priority task-priority--{{ task.priority }}"
+                      aria-label="Приоритет: {{ task.get_priority_display }}"></span>
+                <span class="calendar-task__title">{{ task.title }}</span>
+              </a>
+            {% empty %}
+              <p class="calendar__empty ">Нет задач</p>
+            {% endfor %}
+          </div>
+        </article>
+      {% endfor %}
     </div>
   </section>
 {% endblock %}

@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, get_object_or_404, redirect
@@ -6,6 +8,8 @@ from django.contrib.auth import logout
 from django.http import Http404
 from .models import Project, Task
 from .forms import ProjectForm, TaskForm
+from datetime import date, timedelta
+
 
 # Для защиты, если вышел то на страницу выхода не зайти еще раз в случае чего
 class CustomLoginView(LoginView):
@@ -224,6 +228,66 @@ def logout_view(request):
     logout(request)
     return redirect('tasks:login')
 
-#тест календарь
+# Функциональный календарь
+@login_required
 def calendar_view(request):
-    return render(request, "calendar/calendar.html")
+    # Стартовая дата (из ?start=YYYY-MM-DD или сегодня)
+    start_param = request.GET.get('start')
+    try:
+        start_date = date.fromisoformat(start_param) if start_param else date.today()
+    except (ValueError, TypeError):
+        start_date = date.today()
+
+    # Сдвигаем к понедельнику (находим сколько дней нужно вычесть, чтобы получить понедельник)
+    start_date = start_date - timedelta(days=start_date.weekday())
+    # Сдвигаем к воскресенью (из найденного понедельника находим воскресенье прибавляя 6 дней)
+    end_date = start_date + timedelta(days=6)
+
+    # Доступ: та же логика, что и в project_list
+    if request.user.profile.role == 'manager':
+        tasks = Task.objects.filter(
+            created_by=request.user,
+            # только те задачи что "в работе"
+
+            status='in_progress',
+            due_date__gte=start_date,
+            due_date__lte=end_date,
+        ).select_related('project', 'assigned_to')
+    else:
+        user_groups = request.user.participant_groups.all()
+        tasks = Task.objects.filter(
+            project__group__in=user_groups,
+            # только те задачи что "в работе"
+            status='in_progress',
+            due_date__gte=start_date,
+            due_date__lte=end_date,
+        ).select_related('project', 'assigned_to').distinct()
+
+    # Получаем все задачи и раскидываем их в список с ключем в виде дня дедлайна
+    by_day = defaultdict(list)
+    for task in tasks:
+        by_day[task.due_date].append(task)
+
+    # Группируем по дням
+    weekday_names = ['Понедельник', 'Вторник', 'Среда', 'Четверг',
+                     'Пятница', 'Суббота', 'Воскресенье']
+    today = date.today()
+
+    days = []
+    for i in range(7):
+        day = start_date + timedelta(days=i)
+        days.append({
+            'date': day,
+            'name': weekday_names[i],
+            'is_today': day == today,
+            'tasks': by_day[day],
+        })
+
+    return render(request, 'calendar/calendar.html', {
+        'days': days,
+        'start_date': start_date,
+        'end_date': end_date,
+        'prev_week': start_date - timedelta(days=7),
+        'next_week': start_date + timedelta(days=7),
+        'today': today,
+    })
