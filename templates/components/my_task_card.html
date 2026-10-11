@@ -24,16 +24,18 @@
         {% include 'components/edit_icon.html' %}
       </a>
 
-      <button
-        class="task-card__delete-button"
-        type="button"
-        aria-label="Удалить задачу {{ task.title }}"
-        data-delete-open
-        data-delete-title="задачу «{{ task.title }}»"
-        data-delete-url="{% url 'tasks:task_delete' task.id %}"
-      >
-        {% include 'components/trash_icon.html' %}
-      </button>
+      {% if task.created_by == user %}
+        <button
+          class="task-card__delete-button"
+          type="button"
+          aria-label="Удалить задачу {{ task.title }}"
+          data-delete-open
+          data-delete-title="задачу «{{ task.title }}»"
+          data-delete-url="{% url 'tasks:task_delete' task.id %}"
+        >
+          {% include 'components/trash_icon.html' %}
+        </button>
+      {% endif %}
 
       <button
         class="icon-toggle task-card__toggle {% if expanded %}is-expanded{% endif %}"
