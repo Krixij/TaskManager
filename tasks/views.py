@@ -6,6 +6,8 @@ from django.contrib.auth import logout
 from django.http import Http404
 from .models import Project, Task
 from .forms import ProjectForm, TaskForm
+from datetime import date, timedelta
+
 
 # Для защиты, если вышел то на страницу выхода не зайти еще раз в случае чего
 class CustomLoginView(LoginView):
@@ -76,9 +78,11 @@ def project_edit(request, pk):
 def project_delete(request, pk):
 
     project = get_object_or_404(Project, pk=pk)
-    " добавил невозможность удалить если не автор (возможно также использовать группы людей по доступу к редактированию в будущем)"
+    """ПОКА ПРОСТО КАК ТЕСТ функционал не доработан:
+     добавил невозможность удалить если не автор (возможно также использовать группы людей по доступу к редактированию в будущем)"""
     if project.created_by != request.user:
         raise Http404
+
 
     if request.method == 'POST':
         project.delete()
@@ -97,6 +101,20 @@ def my_tasks(request):
         'completed_tasks': completed_tasks,
     })
 
+@login_required
+def deadline_calendar(request):
+
+    project = get_object_or_404(Project)
+    """ПОКА ПРОСТО КАК ТЕСТ функционал не доработан:
+     добавил невозможность удалить если не автор (возможно также использовать группы людей по доступу к редактированию в будущем)"""
+    if project.created_by != request.user:
+        raise Http404
+
+
+    if request.method == 'POST':
+        project.delete()
+        return redirect('tasks:project_list')
+    return render(request, 'projects/project_confirm_delete.html', {'object': project})
 
 # Создание задачи в проекте (с формой)
 @login_required

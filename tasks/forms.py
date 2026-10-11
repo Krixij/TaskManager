@@ -19,6 +19,7 @@ class ProjectForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
+        # !!Добавить сюда поле дедлайна!!
         fields = ['title', 'description', 'assigned_to', 'status']
         labels = {
             'title': 'Название задачи',

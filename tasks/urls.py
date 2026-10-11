@@ -14,6 +14,7 @@ urlpatterns = [
     path('projects/<int:project_pk>/tasks/create/', views.task_create, name='task_create'),
     path('tasks/<int:pk>/edit/', views.task_edit, name='task_edit'),
     path('tasks/<int:pk>/delete/', views.task_delete, name='task_delete'),
+    path('calendar/', views.deadline_calendar, name='calendar'),
     path('my-tasks/', views.my_tasks, name='my_tasks'),
     path('login/', CustomLoginView.as_view(template_name='auth/login.html'), name='login'),
     path('logout/', views.logout_view, name='logout'),
