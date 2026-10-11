@@ -53,12 +53,13 @@ class Project(models.Model):
         verbose_name_plural = 'Проекты'
         ordering = ['-created_at']
 
-#Модель для задач
+# Модель для задач
 class Task(models.Model):
     STATUS_CHOICES = [
         ('in_progress', 'В работе'),
         ('done', 'Выполнено'),
     ]
+
     title = models.CharField(max_length=200, verbose_name='Название')
     description = models.TextField(blank=True, verbose_name='Описание')
     status = models.CharField(
@@ -88,7 +89,10 @@ class Task(models.Model):
         related_name='created_tasks',
         verbose_name='Автор'
     )
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания'
+    )
 
     def __str__(self):
         return f'{self.title} ({self.get_status_display()})'
@@ -97,3 +101,33 @@ class Task(models.Model):
         verbose_name = 'Задача'
         verbose_name_plural = 'Задачи'
         ordering = ['-created_at']
+
+
+# Модель для подзадач
+class Subtask(models.Model):
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        related_name='subtasks',
+        verbose_name='Задача'
+    )
+    title = models.CharField(
+        max_length=200,
+        verbose_name='Название подзадачи'
+    )
+    is_completed = models.BooleanField(
+        default=False,
+        verbose_name='Выполнена'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания'
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Подзадача'
+        verbose_name_plural = 'Подзадачи'
+        ordering = ['created_at']

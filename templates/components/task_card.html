@@ -35,5 +35,82 @@
       Описание:
       {{ task.description }}
     </div>
+
+    {% if show_subtasks %}
+      <section class="subtasks" aria-label="Подзадачи">
+        <h3>Подзадачи</h3>
+
+        <p>
+          Выполнено: {{ task.completed_subtasks_count }}
+          из {{ task.subtasks_count }}
+        </p>
+
+        <div
+          class="subtasks__progress"
+          role="progressbar"
+          aria-label="Прогресс выполнения подзадач"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="{{ task.subtasks_progress }}"
+          style="height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;"
+        >
+          <div
+            style="height: 8px; width: {{ task.subtasks_progress }}%; background: #22c55e;"
+          ></div>
+        </div>
+
+        <div class="subtasks__list">
+          {% for subtask in task.subtasks.all %}
+            <form
+              method="post"
+              action="{% url 'tasks:subtask_toggle' subtask.pk %}"
+            >
+              {% csrf_token %}
+
+              <label>
+                <input
+                  type="checkbox"
+                  {% if subtask.is_completed %}checked{% endif %}
+                  onchange="this.form.submit()"
+                >
+
+                {% if subtask.is_completed %}
+                  <s>{{ subtask.title }}</s>
+                {% else %}
+                  {{ subtask.title }}
+                {% endif %}
+              </label>
+            </form>
+          {% empty %}
+            <p>Подзадач пока нет.</p>
+          {% endfor %}
+        </div>
+
+        <form
+          method="post"
+          action="{% url 'tasks:subtask_create' task.pk %}"
+          class="subtasks__form"
+        >
+          {% csrf_token %}
+
+          <label for="subtask-title-{{ task.pk }}">
+            Новая подзадача
+          </label>
+
+          <input
+            type="text"
+            id="subtask-title-{{ task.pk }}"
+            name="title"
+            maxlength="200"
+            placeholder="Например, собрать данные"
+            required
+          >
+
+          <button type="submit" class="button">
+            Добавить
+          </button>
+        </form>
+      </section>
+    {% endif %}
   </div>
 </article>

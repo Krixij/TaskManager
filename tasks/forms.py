@@ -1,5 +1,5 @@
 from django import forms
-from .models import Project, Task
+from .models import Project, Task, Subtask
 
 
 class ProjectForm(forms.ModelForm):
@@ -31,4 +31,18 @@ class TaskForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-field__input', 'rows': 4}),
             'assigned_to': forms.Select(attrs={'class': 'form-field__input'}),
             'status': forms.Select(attrs={'class': 'form-field__input'}),
+        }
+# Форма для создания подзадачи
+class SubtaskForm(forms.ModelForm):
+    class Meta:
+        model = Subtask
+        fields = ['title']
+        labels = {
+            'title': 'Название подзадачи',
+        }
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-field__input',
+                'placeholder': 'Например, собрать данные',
+            }),
         }
