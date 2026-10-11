@@ -1,0 +1,83 @@
+{% extends 'layouts/main_layout.html' %}
+
+{% block title %}
+  Календарь
+{% endblock %}
+
+{% block page_header %}
+  <header class="calendar-header">
+    <h1 class="page-title">
+      Календарь
+    </h1>
+
+    <div class="calendar-navigation">
+      <a class="calendar-navigation__button" href="#" aria-label="Предыдущая неделя">
+        «
+      </a>
+
+      <strong class="calendar-navigation__range">
+        -
+      </strong>
+
+      <a class="calendar-navigation__button" href="#" aria-label="Следующая неделя">
+        »
+      </a>
+    </div>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="calendar">
+    <div class="calendar__grid">
+      <article class="calendar__day">
+        <h2 class="calendar__day-title">Понедельник</h2>
+      </article>
+
+      <article class="calendar__day">
+        <h2 class="calendar__day-title">Вторник</h2>
+      </article>
+
+      <article class="calendar__day">
+        <h2 class="calendar__day-title">Среда</h2>
+
+        <div class="calendar__tasks">
+          <a class="calendar-task" href="#">
+            <span class="task-priority task-priority--low"></span>
+            <span class="calendar-task__title">Низкий</span>
+          </a>
+
+          <a class="calendar-task" href="#">
+            <span class="task-priority task-priority--medium"></span>
+            <span class="calendar-task__title">Средний</span>
+          </a>
+
+          <a class="calendar-task" href="#">
+            <span class="task-priority task-priority--high"></span>
+            <span class="calendar-task__title">Высокий</span>
+          </a>
+
+          <a class="calendar-task" href="#">
+            <span class="task-priority task-priority--critical"></span>
+            <span class="calendar-task__title">Критичный</span>
+          </a>
+        </div>
+      </article>
+
+      <article class="calendar__day">
+        <h2 class="calendar__day-title">Четверг</h2>
+      </article>
+
+      <article class="calendar__day">
+        <h2 class="calendar__day-title">Пятница</h2>
+      </article>
+
+      <article class="calendar__day">
+        <h2 class="calendar__day-title">Суббота</h2>
+      </article>
+
+      <article class="calendar__day">
+        <h2 class="calendar__day-title">Воскресенье</h2>
+      </article>
+    </div>
+  </section>
+{% endblock %}
