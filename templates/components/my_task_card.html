@@ -3,11 +3,27 @@
   data-task-card="{{ task.pk }}"
 >
   <div class="task-card__summary">
-    <h3 class="task-card__title">
-      {{ task.title }}
-    </h3>
+<h3 class="task-card__title">
+  <span
+    class="task-priority task-priority--{{ task.priority }}"
+    aria-label="Приоритет: {{ task.get_priority_display }}"
+    title="Приоритет: {{ task.get_priority_display }}"
+  ></span>
+
+  <span>
+    {{ task.title }}
+  </span>
+</h3>
 
     <div class="task-card__summary-actions">
+      <a
+        class="task-card__edit-button"
+        href="{% url 'tasks:task_edit' task.id %}"
+        aria-label="Редактировать задачу {{ task.title }}"
+      >
+        {% include 'components/edit_icon.html' %}
+      </a>
+
       <button
         class="task-card__delete-button"
         type="button"

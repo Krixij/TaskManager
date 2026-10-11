@@ -42,9 +42,16 @@
         Мои задачи
       </span>
     </a>
+    <a class="sidebar__link" href="{% url 'tasks:calendar' %}">
+  <span class="sidebar__icon">
+    {% include 'components/calendar_icon.html' %}
+  </span>
+  Календарь
+</a>
   </nav>
   <a class="sidebar__link" href="{% url 'tasks:logout' %}" style="margin-top: 20px;">
       <span class="sidebar__icon" aria-hidden="true">
+        {% include 'components/logout_icon.html' %}
       </span>
       <span>Выйти</span>
     </a>

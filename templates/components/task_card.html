@@ -1,27 +1,39 @@
 <article class="task-card task-card--with-delete">
   <div class="task-card__content">
     <div class="task-card__header">
-      <h2 class="task-card__title">
-        {{ task.title }}
-      </h2>
+  <h2 class="task-card__title">
+  <span
+    class="task-priority task-priority--{{ task.priority }}"
+    aria-label="Приоритет: {{ task.get_priority_display }}"
+    title="Приоритет: {{ task.get_priority_display }}"
+  ></span>
 
-      <a class="project-card__delete-button"
-         href="{% url 'tasks:task_edit' task.id %}"
-         aria-label="Редактировать задачу {{ task.title }}">
-          редактировать
-      </a>
+  <span>
+    {{ task.title }}
+  </span>
+</h2>
 
-      <button
-        class="task-card__delete-button"
-        type="button"
-        aria-label="Удалить задачу {{ task.title }}"
-        data-delete-open
-        data-delete-title="задачу «{{ task.title }}»"
-        data-delete-url="{% url 'tasks:task_delete' task.id %}"
-      >
-        {% include 'components/trash_icon.html' %}
-      </button>
-    </div>
+  <div class="task-card__actions">
+    <a
+      class="task-card__action-button"
+      href="{% url 'tasks:task_edit' task.id %}"
+      aria-label="Редактировать задачу {{ task.title }}"
+    >
+      {% include 'components/edit_icon.html' %}
+    </a>
+
+    <button
+      class="task-card__delete-button"
+      type="button"
+      aria-label="Удалить задачу {{ task.title }}"
+      data-delete-open
+      data-delete-title="задачу «{{ task.title }}»"
+      data-delete-url="{% url 'tasks:task_delete' task.id %}"
+    >
+      {% include 'components/trash_icon.html' %}
+    </button>
+  </div>
+</div>
 
     {% if show_executor %}
       <p class="task-card__executor">
