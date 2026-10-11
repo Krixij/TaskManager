@@ -3,6 +3,7 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from django.http import Http404
 from .models import Project, Task
 from .forms import ProjectForm, TaskForm
 
@@ -61,7 +62,10 @@ def project_edit(request, pk):
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
             form.save()
-            return redirect('tasks:project_detail', pk=project.pk)
+            # Переход к проекту сразу после редактирования
+            #return redirect('tasks:project_detail', pk=project.pk)
+            # Переход к списку проектов
+            return redirect('tasks:project_list')
     else:
         form = ProjectForm(instance=project)
     return render(request, 'projects/project_form.html', {'form': form, 'object': project})
@@ -70,7 +74,12 @@ def project_edit(request, pk):
 # Удаление проекта
 @login_required
 def project_delete(request, pk):
+
     project = get_object_or_404(Project, pk=pk)
+    " добавил невозможность удалить если не автор (возможно также использовать группы людей по доступу к редактированию в будущем)"
+    if project.created_by != request.user:
+        raise Http404
+
     if request.method == 'POST':
         project.delete()
         return redirect('tasks:project_list')
