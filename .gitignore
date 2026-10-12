@@ -11,6 +11,3 @@ env/
 .idea/
 .vscode/
 
-# Local development files
-db.sqlite3.backup-*
-.env
