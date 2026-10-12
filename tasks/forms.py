@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from .models import Project, Task
+from .models import Project, Task, Subtask
 
 
 class ProjectForm(forms.ModelForm):
@@ -131,3 +131,18 @@ class TaskFilterForm(DateFilterForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.order_fields(['search', 'status', 'priority', 'date_from', 'date_to'])
+        
+# Форма для создания подзадачи
+class SubtaskForm(forms.ModelForm):
+    class Meta:
+        model = Subtask
+        fields = ['title']
+        labels = {
+            'title': 'Название подзадачи',
+        }
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-field__input',
+                'placeholder': 'Например, собрать данные',
+            }),
+        }

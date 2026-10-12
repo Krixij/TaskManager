@@ -23,7 +23,7 @@
 {% block content %}
   <section class="content-panel tasks-panel" aria-label="Список задач проекта">
     {% for task in tasks %}
-      {% include 'components/task_card.html' with task=task show_executor=True %}
+      {% include 'components/task_card.html' with task=task show_executor=True show_subtasks=True %}
     {% empty %}
       {% include 'components/empty_state.html' with title='Задачи пока не добавлены' text='Нажмите «Добавить задачу», чтобы создать первую задачу в проекте.' %}
     {% endfor %}

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Project, Task, GroupPeople, UserProfile
+from .models import Project, Task, GroupPeople, UserProfile, Subtask
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
@@ -109,3 +109,12 @@ class TaskAdmin(admin.ModelAdmin):
 
     )
 # Register your models here.
+
+# Админка для подзадач
+@admin.register(Subtask)
+class SubtaskAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'task', 'is_completed', 'created_at']
+    list_filter = ['is_completed', 'created_at']
+    search_fields = ['title', 'task__title']
+    list_editable = ['is_completed']
+    readonly_fields = ['created_at']
