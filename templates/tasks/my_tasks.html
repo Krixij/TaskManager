@@ -18,6 +18,17 @@
 {% endblock %}
 
 {% block content %}
+  <form class="filters-form" method="get" action="{% url 'tasks:my_tasks' %}">
+    <div class="filters-form__fields filters-form__fields--tasks">
+      {% for field in filter_form %}
+        {% include 'components/field.html' with field=field %}
+      {% endfor %}
+    </div>
+    <div class="filters-form__actions">
+      <button class="button filters-form__button" type="submit">Применить</button>
+      <a class="filters-form__reset" href="{% url 'tasks:my_tasks' %}">Сбросить</a>
+    </div>
+  </form>
   <section class="content-panel my-tasks-panel" aria-label="Мои задачи">
     <div class="tasks-section" data-task-section="active">
       <div class="tasks-section__header">
@@ -42,7 +53,11 @@
           {% include 'components/my_task_card.html' with task=task show_project=True expanded=forloop.last  %}
 
         {% empty %}
-          {% include 'components/empty_state.html' with title='Активных задач нет' text='Новые задачи появятся в этом разделе.' %}
+          {% if request.GET %}
+            {% include 'components/empty_state.html' with title='Задачи не найдены' text='Попробуйте изменить параметры фильтрации.' %}
+          {% else %}
+            {% include 'components/empty_state.html' with title='Активных задач нет' text='Новые задачи появятся в этом разделе.' %}
+          {% endif %}
         {% endfor %}
       </div>
     </div>
@@ -71,7 +86,11 @@
         {% for task in completed_tasks %}
           {% include 'components/my_task_card.html' with task=task show_project=True expanded=False %}
         {% empty %}
-          {% include 'components/empty_state.html' with title='Завершенных задач нет' %}
+          {% if request.GET %}
+            {% include 'components/empty_state.html' with title='Задачи не найдены' text='Попробуйте изменить параметры фильтрации.' %}
+          {% else %}
+            {% include 'components/empty_state.html' with title='Завершенных задач нет' %}
+          {% endif %}
         {% endfor %}
       </div>
     </div>
