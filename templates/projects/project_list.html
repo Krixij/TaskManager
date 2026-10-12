@@ -6,8 +6,15 @@
 
 {% block page_header %}
   <header class="page-header">
-    <h1 class="page-title">Проекты</h1>
-    <a class="button" href="{% url 'tasks:project_create' %}">Добавить проект</a>
+    <h1 class="page-title">
+      Проекты
+    </h1>
+
+    {% if user.profile.role == 'manager' %}
+    <a class="button" href="{% url 'tasks:project_create' %}">
+      Добавить проект
+    </a>
+    {% endif %}
   </header>
 {% endblock %}
 
@@ -30,8 +37,10 @@
     {% empty %}
       {% if request.GET %}
         {% include 'components/empty_state.html' with title='Ничего не найдено' text='Измени поисковый запрос или параметры фильтрации.' %}
-      {% else %}
+      {% elif user.profile.role == 'manager' %}
         {% include 'components/empty_state.html' with title='Проекты пока не добавлены' text='Нажмите «Добавить проект», чтобы создать первый проект.' %}
+      {% else %}
+        {% include 'components/empty_state.html' with title='Проектов пока нет' text='Обратитесь к руководителю, чтобы вас добавили в группу.' %}
       {% endif %}
     {% endfor %}
   </section>

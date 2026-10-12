@@ -12,14 +12,24 @@
     {% endif %}
   </div>
 
-  <button
-    class="project-card__delete-button"
-    type="button"
-    aria-label="Удалить проект {{ project.name }}"
-    data-delete-open
-    data-delete-title="проект «{{ project.name }}»"
-    data-delete-url="{% url 'tasks:project_delete' project.id %}"
-  >
-    {% include 'components/trash_icon.html' %}
-  </button>
+  {% if project.created_by == user %}
+    <a
+      class="project-card__delete-button"
+      href="{% url 'tasks:project_edit' project.id %}"
+      aria-label="Редактировать проект {{ project.name }}"
+    >
+      {% include 'components/edit_icon.html' %}
+    </a>
+
+    <button
+      class="project-card__delete-button"
+      type="button"
+      aria-label="Удалить проект {{ project.name }}"
+      data-delete-open
+      data-delete-title="проект «{{ project.name }}»"
+      data-delete-url="{% url 'tasks:project_delete' project.id %}"
+    >
+      {% include 'components/trash_icon.html' %}
+    </button>
+  {% endif %}
 </article>
