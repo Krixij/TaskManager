@@ -1,17 +1,19 @@
 from collections import defaultdict
-
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
+from django.db.models import Q, Count
 from django.shortcuts import render, get_object_or_404, redirect
+from .forms import ProjectForm, TaskForm, ProjectFilterForm, TaskFilterForm, SubtaskForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib.auth import logout
 from django.http import Http404
-from .models import Project, Task
 from .forms import ProjectForm, TaskForm
 from datetime import date, timedelta
+from .models import Project, Task, Subtask
 
 
-# Для защиты, если вышел то на страницу выхода не зайти еще раз в случае чего
+# Если пользователь уже вошёл, повторно открывать страницу входа не нужно.
 class CustomLoginView(LoginView):
     template_name = 'auth/login.html'
 
@@ -20,17 +22,57 @@ class CustomLoginView(LoginView):
             return redirect('tasks:project_list')
         return super().get(request, *args, **kwargs)
 
-# Главная - список проектов
+
+# Главная — список проектов с поиском и фильтрами.
 @login_required
 def project_list(request):
-    # Руководитель видит только созданные им проекты
+    # Руководитель видит созданные им проекты,
+    # исполнитель — проекты групп, в которых состоит.
     if request.user.profile.role == 'manager':
         projects = Project.objects.filter(created_by=request.user)
     # Исполнитель видит проекты групп, в которых состоит
     else:
         user_groups = request.user.participant_groups.all()
         projects = Project.objects.filter(group__in=user_groups)
-    return render(request, 'projects/project_list.html', {'object_list': projects})
+
+    filter_form = ProjectFilterForm(request.GET or None)
+    if filter_form.is_valid():
+        search = filter_form.cleaned_data.get('search')
+        status = filter_form.cleaned_data.get('status')
+        priority = filter_form.cleaned_data.get('priority')
+        assigned_to = filter_form.cleaned_data.get('assigned_to')
+        date_from = filter_form.cleaned_data.get('date_from')
+        date_to = filter_form.cleaned_data.get('date_to')
+
+        if search:
+            projects = projects.filter(
+                Q(name__icontains=search)
+                | Q(description__icontains=search)
+                | Q(tasks__title__icontains=search)
+                | Q(tasks__description__icontains=search)
+            ).distinct()
+
+        # На странице проектов даты относятся к дате создания проекта.
+        if date_from:
+            projects = projects.filter(created_at__date__gte=date_from)
+        if date_to:
+            projects = projects.filter(created_at__date__lte=date_to)
+
+        # Статус, приоритет и исполнитель относятся к задачам внутри проекта.
+        if status or priority or assigned_to:
+            matching_tasks = Task.objects.filter(project__in=projects)
+            if status:
+                matching_tasks = matching_tasks.filter(status=status)
+            if priority:
+                matching_tasks = matching_tasks.filter(priority=priority)
+            if assigned_to:
+                matching_tasks = matching_tasks.filter(assigned_to=assigned_to)
+            projects = projects.filter(pk__in=matching_tasks.values('project_id'))
+
+    return render(request, 'projects/project_list.html', {
+        'object_list': projects.order_by('-created_at').distinct(),
+        'filter_form': filter_form,
+    })
 
 # Детали проекта
 @login_required
@@ -47,8 +89,33 @@ def project_detail(request, pk):
     tasks = project.tasks.all()
     return render(request, 'projects/project_detail.html', {'project': project, 'tasks': tasks})
 
+    tasks = project.tasks.annotate(
+        subtasks_count=Count('subtasks', distinct=True),
+        completed_subtasks_count=Count(
+            'subtasks',
+            filter=Q(subtasks__is_completed=True),
+            distinct=True
+        )
+    ).prefetch_related('subtasks')
 
-# Создание проекта (с формой)
+    for task in tasks:
+        if task.subtasks_count > 0:
+            task.subtasks_progress = round(
+                task.completed_subtasks_count / task.subtasks_count * 100
+            )
+        else:
+            task.subtasks_progress = 0
+
+    return render(
+        request,
+        'projects/project_detail.html',
+        {
+            'project': project,
+            'tasks': tasks,
+        }
+    )
+
+# Создание проекта
 @login_required
 def project_create(request):
     # Создавать проекты может только руководитель
@@ -70,8 +137,7 @@ def project_create(request):
         form.fields['group'].queryset = request.user.participant_groups.all()
     return render(request, 'projects/project_form.html', {'form': form})
 
-
-# Редактирование проекта (с формой)
+# Редактирование проекта.
 @login_required
 def project_edit(request, pk):
     project = get_object_or_404(Project, pk=pk)
@@ -91,12 +157,13 @@ def project_edit(request, pk):
             return redirect('tasks:project_list')
     else:
         form = ProjectForm(instance=project)
-        # Ограничиваем выбор группы только теми, где состоит руководитель
+         # Ограничиваем выбор группы только теми, где состоит руководитель
         form.fields['group'].queryset = request.user.participant_groups.all()
+
     return render(request, 'projects/project_form.html', {'form': form, 'object': project})
 
 
-# Удаление проекта
+# Удаление проекта.
 @login_required
 def project_delete(request, pk):
 
@@ -111,55 +178,106 @@ def project_delete(request, pk):
     return render(request, 'projects/project_confirm_delete.html', {'object': project})
 
 
-# Мои задачи (добавлен select_related для отбора всех проектов сразу за один запрос к БД)
+
+# Мои задачи — поиск и фильтры применяются только к задачам текущего пользователя.
 @login_required
 def my_tasks(request):
-    active_tasks = Task.objects.filter(assigned_to=request.user, status='in_progress').select_related('project')
-    completed_tasks = Task.objects.filter(assigned_to=request.user, status='done').select_related('project')
+    filter_form = TaskFilterForm(request.GET or None)
+    tasks = Task.objects.filter(assigned_to=request.user).select_related('project')
+
+    if filter_form.is_valid():
+        search = filter_form.cleaned_data.get('search')
+        status = filter_form.cleaned_data.get('status')
+        priority = filter_form.cleaned_data.get('priority')
+        date_from = filter_form.cleaned_data.get('date_from')
+        date_to = filter_form.cleaned_data.get('date_to')
+
+        if search:
+            tasks = tasks.filter(Q(title__icontains=search) | Q(description__icontains=search))
+        if status:
+            tasks = tasks.filter(status=status)
+        if priority:
+            tasks = tasks.filter(priority=priority)
+        if date_from:
+            tasks = tasks.filter(created_at__date__gte=date_from)
+        if date_to:
+            tasks = tasks.filter(created_at__date__lte=date_to)
 
     return render(request, 'tasks/my_tasks.html', {
-        'active_tasks': active_tasks,
-        'completed_tasks': completed_tasks,
+        'active_tasks': tasks.filter(status='in_progress'),
+        'completed_tasks': tasks.filter(status='done'),
+        'filter_form': filter_form,
     })
 
+    """return render(
+        request,
+        'tasks/my_tasks.html',
+        {
+            'active_tasks': active_tasks,
+            'completed_tasks': completed_tasks,
+        }
+    )"""
 
-# Создание задачи в проекте (с формой)
+# Создание задачи в проекте.
 @login_required
 def task_create(request, project_pk):
     project = get_object_or_404(Project, pk=project_pk)
     role = request.user.profile.role
 
-    # Руководитель может создавать задачи только в своих проектах
+    # Проверка прав доступа к проекту
     if role == 'manager':
+        # Руководитель может создавать задачи только в своих проектах
         if project.created_by != request.user:
             raise Http404
         # Руководитель назначает исполнителя из участников группы проекта
-        assigned_queryset = project.group.participant.all()
-    # Исполнитель может создавать задачи только в проектах своих групп и только для себя
+        if project.group:
+            allowed_assignees = project.group.participant.all()
+        else:
+            allowed_assignees = User.objects.none()
     else:
-        if not project.group.participant.filter(id=request.user.id).exists():
+        # Исполнитель может создавать задачи только в проектах своих групп
+        if not project.group or not project.group.participant.filter(id=request.user.id).exists():
             raise Http404
-        assigned_queryset = User.objects.filter(id=request.user.id)
+        # И назначать задачу только себе
+        allowed_assignees = User.objects.filter(id=request.user.id)
 
     if request.method == 'POST':
         form = TaskForm(request.POST)
-        # Ограничиваем выбор исполнителя
-        form.fields['assigned_to'].queryset = assigned_queryset
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.project = project
-            task.created_by = request.user
-            task.save()
-            return redirect('tasks:project_detail', pk=project.pk)
     else:
         form = TaskForm()
-        # Ограничиваем выбор исполнителя только участниками проекта
-        form.fields['assigned_to'].queryset = assigned_queryset
 
-    return render(request, 'tasks/task_form.html', {'form': form, 'project': project})
+    # Ограничение применяется и при GET, и при POST
+    form.fields['assigned_to'].queryset = allowed_assignees
+
+    if request.method == 'POST' and form.is_valid():
+        task = form.save(commit=False)
+        task.project = project
+        task.created_by = request.user
+        task.save()
+        return redirect('tasks:project_detail', pk=project.pk)
+
+        if project.group:
+            project_participants = project.group.participant.all()
+            form.fields['assigned_to'].queryset = (
+                project_participants |
+                User.objects.filter(pk=request.user.pk)
+            ).distinct()
+        else:
+            form.fields['assigned_to'].queryset = User.objects.filter(
+                pk=request.user.pk
+            )
+
+    return render(
+        request,
+        'tasks/task_form.html',
+        {
+            'form': form,
+            'project': project,
+        }
+    )
 
 
-# Редактирование задачи (с формой)
+# Редактирование задачи.
 @login_required
 def task_edit(request, pk):
     task = get_object_or_404(Task, pk=pk)
@@ -209,7 +327,7 @@ def task_edit(request, pk):
     return render(request, 'tasks/task_form.html', {'form': form, 'object': task, 'project': task.project})
 
 
-# Удаление задачи
+# Удаление задачи.
 @login_required
 def task_delete(request, pk):
     task = get_object_or_404(Task, pk=pk)
@@ -217,13 +335,65 @@ def task_delete(request, pk):
     if task.created_by != request.user:
         raise Http404
     project_pk = task.project.pk
+
     if request.method == 'POST':
         task.delete()
         return redirect('tasks:project_detail', pk=project_pk)
-    return render(request, 'tasks/task_confirm_delete.html', {'object': task})
+
+    return render(
+        request,
+        'tasks/task_confirm_delete.html',
+        {'object': task}
+    )
 
 
-# Выход
+# Создание подзадачи
+@login_required
+@require_POST
+def subtask_create(request, task_pk):
+    task = get_object_or_404(
+        Task.objects.filter(
+            Q(project__created_by=request.user) |
+            Q(project__group__participant=request.user)
+        ).distinct(),
+        pk=task_pk
+    )
+
+    form = SubtaskForm(request.POST)
+
+    if form.is_valid():
+        subtask = form.save(commit=False)
+        subtask.task = task
+        subtask.save()
+
+    return redirect(
+        'tasks:project_detail',
+        pk=task.project_id
+    )
+
+
+# Изменение статуса подзадачи
+@login_required
+@require_POST
+def subtask_toggle(request, pk):
+    subtask = get_object_or_404(
+        Subtask.objects.filter(
+            Q(task__project__created_by=request.user) |
+            Q(task__project__group__participant=request.user)
+        ).distinct(),
+        pk=pk
+    )
+
+    subtask.is_completed = not subtask.is_completed
+    subtask.save(update_fields=['is_completed'])
+
+    return redirect(
+        'tasks:project_detail',
+        pk=subtask.task.project_id
+    )
+
+
+# Выход.
 def logout_view(request):
     logout(request)
     return redirect('tasks:login')

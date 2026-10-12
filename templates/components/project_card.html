@@ -1,11 +1,16 @@
 <article class="project-card project-card--with-delete">
-  <a
-    class="project-card__link"
-    href="{% url 'tasks:project_detail' project.id %}"
-    aria-label="Открыть проект {{ project.name }}"
-  >
-    {{ project.name }}
-  </a>
+  <div class="project-card__content">
+    <a
+      class="project-card__link"
+      href="{% url 'tasks:project_detail' project.id %}"
+      aria-label="Открыть проект {{ project.name }}"
+    >
+      {{ project.name }}
+    </a>
+    {% if project.description %}
+      <p class="project-card__description">{{ project.description|truncatechars:140 }}</p>
+    {% endif %}
+  </div>
 
   {% if project.created_by == user %}
     <a

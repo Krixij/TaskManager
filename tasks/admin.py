@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Project, Task, GroupPeople, UserProfile
+from .models import Project, Task, GroupPeople, UserProfile, Subtask
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
@@ -72,7 +72,7 @@ class GroupPeopleAdmin(admin.ModelAdmin):
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'created_by', 'created_at']
     list_filter = ['created_by', 'created_at']
-    search_fields = ['name']
+    search_fields = ['name', 'description']
     readonly_fields = ['created_at']
     raw_id_fields = ['group']
 
@@ -84,10 +84,10 @@ class ProjectAdmin(admin.ModelAdmin):
 #Админка дял задач
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'project', 'status', 'priority', 'assigned_to', 'due_date', 'created_at']
-    list_filter = ['project', 'status', 'priority']
-    search_fields = ['title']
-    list_editable = ['status']
+    list_display = ['id', 'title', 'project', 'status', 'priority', 'assigned_to','due_date', 'created_at']
+    list_filter = ['project', 'status', 'priority', 'assigned_to', 'created_at']
+    search_fields = ['title', 'description']
+    list_editable = ['status', 'assigned_to']
     readonly_fields = ['created_at', 'created_by']
 
     def save_model(self, request, obj, form, change):
@@ -109,3 +109,12 @@ class TaskAdmin(admin.ModelAdmin):
 
     )
 # Register your models here.
+
+# Админка для подзадач
+@admin.register(Subtask)
+class SubtaskAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'task', 'is_completed', 'created_at']
+    list_filter = ['is_completed', 'created_at']
+    search_fields = ['title', 'task__title']
+    list_editable = ['is_completed']
+    readonly_fields = ['created_at']

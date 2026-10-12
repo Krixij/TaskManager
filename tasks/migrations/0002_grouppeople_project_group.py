@@ -16,11 +16,33 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GroupPeople',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200, verbose_name='Название')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
-                ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_groups', to=settings.AUTH_USER_MODEL, verbose_name='Создатель группы')),
-                ('participant', models.ManyToManyField(blank=True, related_name='participant_groups', to=settings.AUTH_USER_MODEL, verbose_name='Участник')),
+                ('id', models.BigAutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID'
+                )),
+                ('title', models.CharField(
+                    max_length=200,
+                    verbose_name='Название'
+                )),
+                ('created_at', models.DateTimeField(
+                    auto_now_add=True,
+                    verbose_name='Дата создания'
+                )),
+                ('created_by', models.ForeignKey(
+                    null=True,
+                    on_delete=django.db.models.deletion.SET_NULL,
+                    related_name='created_groups',
+                    to=settings.AUTH_USER_MODEL,
+                    verbose_name='Создатель группы'
+                )),
+                ('participant', models.ManyToManyField(
+                    blank=True,
+                    related_name='participant_groups',
+                    to=settings.AUTH_USER_MODEL,
+                    verbose_name='Участник'
+                )),
             ],
             options={
                 'verbose_name': 'Группа',
@@ -31,6 +53,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='group',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='group_projects', to='tasks.grouppeople', verbose_name='Группа'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='group_projects',
+                to='tasks.grouppeople',
+                verbose_name='Группа'
+            ),
         ),
     ]

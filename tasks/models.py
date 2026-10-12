@@ -53,6 +53,7 @@ class UserProfile(models.Model):
 #Модель для проектов
 class Project(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название проекта')
+    description = models.TextField(blank=True, verbose_name='Описание')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     created_by = models.ForeignKey(
         User,
@@ -77,7 +78,7 @@ class Project(models.Model):
         verbose_name_plural = 'Проекты'
         ordering = ['-created_at']
 
-#Модель для задач
+# Модель для задач
 class Task(models.Model):
     STATUS_CHOICES = [
         ('in_progress', 'В работе'),
@@ -134,3 +135,33 @@ class Task(models.Model):
         verbose_name = 'Задача'
         verbose_name_plural = 'Задачи'
         ordering = ['-created_at']
+
+
+# Модель для подзадач
+class Subtask(models.Model):
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        related_name='subtasks',
+        verbose_name='Задача'
+    )
+    title = models.CharField(
+        max_length=200,
+        verbose_name='Название подзадачи'
+    )
+    is_completed = models.BooleanField(
+        default=False,
+        verbose_name='Выполнена'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания'
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Подзадача'
+        verbose_name_plural = 'Подзадачи'
+        ordering = ['created_at']
