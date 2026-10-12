@@ -21,27 +21,39 @@ class ProjectForm(forms.ModelForm):
                 'placeholder': 'Краткое описание проекта (необязательно)',
             }),
             'group': forms.Select(attrs={'class': 'form-field__input'}),
+
         }
 
 
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'status', 'priority', 'assigned_to']
+        fields = ['title', 'description', 'status', 'priority', 'assigned_to', 'due_date']
         labels = {
             'title': 'Название задачи',
             'description': 'Описание',
+            'assigned_to': 'Исполнитель',
             'status': 'Статус',
             'priority': 'Приоритет',
             'assigned_to': 'Исполнитель',
+            'due_date': 'Срок выполнения',
         }
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-field__input'}),
             'description': forms.Textarea(attrs={'class': 'form-field__input', 'rows': 4}),
-            'status': forms.Select(attrs={'class': 'form-field__input'}),
-            'priority': forms.Select(attrs={'class': 'form-field__input'}),
-            'assigned_to': forms.Select(attrs={'class': 'form-field__input'}),
+            'assigned_to': forms.Select(attrs={'style': 'max-width: 300px;', 'class': 'form-field__input'}),
+            'status': forms.Select(attrs={'style': 'max-width: 200px;', 'class': 'form-field__input'}),
+            'priority': forms.Select(attrs={'style': 'max-width: 200px;', 'class': 'form-field__input'}),
+            'due_date': forms.DateInput(
+                attrs={'class': 'form-field__input', 'type': 'date', 'style': 'max-width: 200px;',
+},
+                format='%Y-%m-%d',
+            ),
         }
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['due_date'].input_forma
 
 
 class DateFilterForm(forms.Form):
@@ -131,7 +143,7 @@ class TaskFilterForm(DateFilterForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.order_fields(['search', 'status', 'priority', 'date_from', 'date_to'])
-        
+
 # Форма для создания подзадачи
 class SubtaskForm(forms.ModelForm):
     class Meta:

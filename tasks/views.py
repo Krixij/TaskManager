@@ -1,5 +1,4 @@
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
+from collections import defaultdict
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.db.models import Q, Count
@@ -9,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib.auth import logout
 from django.http import Http404
+from .forms import ProjectForm, TaskForm
+from datetime import date, timedelta
 from .models import Project, Task, Subtask
 
 
@@ -29,6 +30,7 @@ def project_list(request):
     # исполнитель — проекты групп, в которых состоит.
     if request.user.profile.role == 'manager':
         projects = Project.objects.filter(created_by=request.user)
+    # Исполнитель видит проекты групп, в которых состоит
     else:
         user_groups = request.user.participant_groups.all()
         projects = Project.objects.filter(group__in=user_groups)
@@ -70,7 +72,7 @@ def project_list(request):
     return render(request, 'projects/project_list.html', {
         'object_list': projects.order_by('-created_at').distinct(),
         'filter_form': filter_form,
-    })    
+    })
 
 # Детали проекта
 @login_required
@@ -135,12 +137,6 @@ def project_create(request):
         form.fields['group'].queryset = request.user.participant_groups.all()
     return render(request, 'projects/project_form.html', {'form': form})
 
-    return render(
-        request,
-        'projects/project_form.html',
-        {'form': form}
-    )
-
 # Редактирование проекта.
 @login_required
 def project_edit(request, pk):
@@ -163,7 +159,7 @@ def project_edit(request, pk):
         form = ProjectForm(instance=project)
          # Ограничиваем выбор группы только теми, где состоит руководитель
         form.fields['group'].queryset = request.user.participant_groups.all()
-       
+
     return render(request, 'projects/project_form.html', {'form': form, 'object': project})
 
 
@@ -179,12 +175,8 @@ def project_delete(request, pk):
     if request.method == 'POST':
         project.delete()
         return redirect('tasks:project_list')
+    return render(request, 'projects/project_confirm_delete.html', {'object': project})
 
-    return render(
-        request,
-        'projects/project_confirm_delete.html',
-        {'object': project}
-    )
 
 
 # Мои задачи — поиск и фильтры применяются только к задачам текущего пользователя.
@@ -217,14 +209,14 @@ def my_tasks(request):
         'filter_form': filter_form,
     })
 
-    return render(
+    """return render(
         request,
         'tasks/my_tasks.html',
         {
             'active_tasks': active_tasks,
             'completed_tasks': completed_tasks,
         }
-    )
+    )"""
 
 # Создание задачи в проекте.
 @login_required
@@ -332,15 +324,7 @@ def task_edit(request, pk):
                     field.widget.attrs['readonly'] = True
                     field.widget.attrs['disabled'] = True
 
-    return render(
-        request,
-        'tasks/task_form.html',
-        {
-            'form': form,
-            'object': task,
-            'project': task.project,
-        }
-    )
+    return render(request, 'tasks/task_form.html', {'form': form, 'object': task, 'project': task.project})
 
 
 # Удаление задачи.
@@ -414,6 +398,66 @@ def logout_view(request):
     logout(request)
     return redirect('tasks:login')
 
-#тест календарь
+# Функциональный календарь
+@login_required
 def calendar_view(request):
-    return render(request, "calendar/calendar.html")
+    # Стартовая дата (из ?start=YYYY-MM-DD или сегодня)
+    start_param = request.GET.get('start')
+    try:
+        start_date = date.fromisoformat(start_param) if start_param else date.today()
+    except (ValueError, TypeError):
+        start_date = date.today()
+
+    # Сдвигаем к понедельнику (находим сколько дней нужно вычесть, чтобы получить понедельник)
+    start_date = start_date - timedelta(days=start_date.weekday())
+    # Сдвигаем к воскресенью (из найденного понедельника находим воскресенье прибавляя 6 дней)
+    end_date = start_date + timedelta(days=6)
+
+    # Доступ: та же логика, что и в project_list
+    if request.user.profile.role == 'manager':
+        tasks = Task.objects.filter(
+            created_by=request.user,
+            # только те задачи что "в работе"
+
+            status='in_progress',
+            due_date__gte=start_date,
+            due_date__lte=end_date,
+        ).select_related('project', 'assigned_to')
+    else:
+        user_groups = request.user.participant_groups.all()
+        tasks = Task.objects.filter(
+            project__group__in=user_groups,
+            # только те задачи что "в работе"
+            status='in_progress',
+            due_date__gte=start_date,
+            due_date__lte=end_date,
+        ).select_related('project', 'assigned_to').distinct()
+
+    # Получаем все задачи и раскидываем их в список с ключем в виде дня дедлайна
+    by_day = defaultdict(list)
+    for task in tasks:
+        by_day[task.due_date].append(task)
+
+    # Группируем по дням
+    weekday_names = ['Понедельник', 'Вторник', 'Среда', 'Четверг',
+                     'Пятница', 'Суббота', 'Воскресенье']
+    today = date.today()
+
+    days = []
+    for i in range(7):
+        day = start_date + timedelta(days=i)
+        days.append({
+            'date': day,
+            'name': weekday_names[i],
+            'is_today': day == today,
+            'tasks': by_day[day],
+        })
+
+    return render(request, 'calendar/calendar.html', {
+        'days': days,
+        'start_date': start_date,
+        'end_date': end_date,
+        'prev_week': start_date - timedelta(days=7),
+        'next_week': start_date + timedelta(days=7),
+        'today': today,
+    })

@@ -112,6 +112,12 @@
   border-radius:var(--radius-md);
   background:var(--color-card-bg)
 }
+/* Для перехода из календаря - подсветка задачи */
+.task-card--highlighted {
+  outline: 3px solid var(--color-button-bg);
+  outline-offset: 4px;
+  transition: outline-color var(--transition-base);
+}
 
 .task-card+.task-card {
   margin-top:32px

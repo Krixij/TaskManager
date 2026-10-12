@@ -272,6 +272,11 @@
 }
 
 .calendar__day-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
   min-height:48px;
   padding:12px 8px;
   border-bottom:2px solid #b7c0c9;
@@ -280,6 +285,45 @@
   font-weight:700;
   text-align:center
 }
+
+/* Для имени дня, если он у нас не вмещается, то пойдет с точками (а то счетчик не вмещается) */
+.calendar__day-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Для сегодняшнего дня будет выделение столбца в таблице недели */
+.calendar__day--today {
+  background: #fff7ed;
+  box-shadow: inset 0 4px 0 var(--color-button-bg);
+}
+
+.calendar__day--today .calendar__day-title {
+  color: var(--color-button-bg);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------ */
+
+/* Для счетчика задач  */
+.calendar__day-count {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--color-button-bg);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 400;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+.calendar__day-count--many{
+  background: var(--color-danger);
+
+}
+/* ----------------- */
 
 .calendar__tasks {
   display:flex;
@@ -310,4 +354,14 @@
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap
+}
+
+/* Для календаря - пустые значения */
+.calendar__empty {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  text-align: center;
+  opacity: .5;
+  margin: 0;
+  padding: 8px 0;
 }

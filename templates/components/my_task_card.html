@@ -1,6 +1,7 @@
 <article
   class="task-card task-card--my-task task-card--collapsible {% if expanded %}is-expanded{% else %}is-collapsed{% endif %}"
   data-task-card="{{ task.pk }}"
+  id="task-{{ task.id }}"
 >
   <div class="task-card__summary">
 <h3 class="task-card__title">
@@ -54,8 +55,14 @@
 
     {% if show_project %}
       <p class="task-card__executor">
-        <a href="{% url 'tasks:project_detail' task.project.pk %}">
-          Проект: {{ task.project.name }}
+          Статус: {{ task.get_status_display }}<br>
+          {% if task.due_date %}
+            До: {{ task.due_date }}
+          {% endif %}
+      </p>
+      <p class="task-card__executor">
+        <a href="{% url 'tasks:project_detail' task.project.pk %}#task-{{ task.id }}">
+          Проект: {{ task.project.name  }}
         </a>
       </p>
     {% endif %}
