@@ -26,9 +26,34 @@ class GroupPeople(models.Model):
         ordering = ['-created_at']
 
 
+#Модель для пользователей
+class UserProfile(models.Model):
+    ROLE_CHOICES = [
+        ('manager', 'Руководитель'),
+        ('executor', 'Исполнитель'),
+    ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='executor', verbose_name='Роль')
+    manager = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='subordinates',
+        verbose_name='Руководитель'
+    )
+
+    def __str__(self):
+        return f'{self.user.username} ({self.get_role_display()})'
+
+    class Meta:
+        verbose_name = 'Профиль пользователя'
+        verbose_name_plural = 'Профили пользователей'
+
 #Модель для проектов
 class Project(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название проекта')
+    description = models.TextField(blank=True, verbose_name='Описание')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     created_by = models.ForeignKey(
         User,
@@ -59,7 +84,12 @@ class Task(models.Model):
         ('in_progress', 'В работе'),
         ('done', 'Выполнено'),
     ]
-
+    PRIORITY_CHOICES = [
+        ('low', 'Низкий'),
+        ('medium', 'Средний'),
+        ('high', 'Высокий'),
+        ('critical', 'Критичный'),
+    ]
     title = models.CharField(max_length=200, verbose_name='Название')
     description = models.TextField(blank=True, verbose_name='Описание')
     status = models.CharField(
@@ -67,6 +97,12 @@ class Task(models.Model):
         choices=STATUS_CHOICES,
         default='in_progress',
         verbose_name='Статус'
+    )
+    priority = models.CharField(
+        max_length=20,
+        choices=PRIORITY_CHOICES,
+        default='low',
+        verbose_name='Приоритет'
     )
     project = models.ForeignKey(
         Project,
@@ -89,10 +125,8 @@ class Task(models.Model):
         related_name='created_tasks',
         verbose_name='Автор'
     )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Дата создания'
-    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    due_date = models.DateField(null=True, blank=True ,verbose_name='Срок выполнения')
 
     def __str__(self):
         return f'{self.title} ({self.get_status_display()})'

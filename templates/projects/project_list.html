@@ -10,23 +10,40 @@
       Проекты
     </h1>
 
+    {% if user.profile.role == 'manager' %}
     <a class="button" href="{% url 'tasks:project_create' %}">
       Добавить проект
     </a>
+    {% endif %}
   </header>
 {% endblock %}
 
 {% block content %}
+  <form class="filters-form" method="get" action="{% url 'tasks:project_list' %}">
+    <div class="filters-form__fields">
+      {% for field in filter_form %}
+        {% include 'components/field.html' with field=field %}
+      {% endfor %}
+    </div>
+    <div class="filters-form__actions">
+      <button class="button filters-form__button" type="submit">Применить</button>
+      <a class="filters-form__reset" href="{% url 'tasks:project_list' %}">Сбросить</a>
+    </div>
+  </form>
+
   <section class="content-panel projects-panel" aria-label="Список проектов">
     {% for project in object_list %}
       {% include 'components/project_card.html' with project=project %}
     {% empty %}
-      {% include 'components/empty_state.html' with title='Проекты пока не добавлены' text='Нажмите «Добавить проект», чтобы создать первый проект.' %}
+      {% if request.GET %}
+        {% include 'components/empty_state.html' with title='Ничего не найдено' text='Измени поисковый запрос или параметры фильтрации.' %}
+      {% elif user.profile.role == 'manager' %}
+        {% include 'components/empty_state.html' with title='Проекты пока не добавлены' text='Нажмите «Добавить проект», чтобы создать первый проект.' %}
+      {% else %}
+        {% include 'components/empty_state.html' with title='Проектов пока нет' text='Обратитесь к руководителю, чтобы вас добавили в группу.' %}
+      {% endif %}
     {% endfor %}
   </section>
 
-  {% include 'includes/pagination.html' %}
-
   {% include 'components/delete_confirm_modal.html' %}
-
 {% endblock %}

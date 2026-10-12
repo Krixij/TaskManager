@@ -37,10 +37,7 @@ urlpatterns = [
 
     # Мои задачи и авторизация
     path('my-tasks/', views.my_tasks, name='my_tasks'),
-    path(
-        'login/',
-        CustomLoginView.as_view(template_name='auth/login.html'),
-        name='login'
-    ),
+    path('calendar/', views.calendar_view, name='calendar'),  #тест календарь
+    path('login/', CustomLoginView.as_view(template_name='auth/login.html'), name='login'),
     path('logout/', views.logout_view, name='logout'),
 ]
