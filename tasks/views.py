@@ -86,9 +86,7 @@ def project_detail(request, pk):
         if not project.group.participant.filter(id=request.user.id).exists():
             raise Http404
 
-    tasks = project.tasks.all()
-    return render(request, 'projects/project_detail.html', {'project': project, 'tasks': tasks})
-
+    #tasks = project.tasks.all()
     tasks = project.tasks.annotate(
         subtasks_count=Count('subtasks', distinct=True),
         completed_subtasks_count=Count(
