@@ -1,49 +1,127 @@
+
 {% extends 'layouts/main_layout.html' %}
+{% load static %}
 
 {% block title %}
   Проекты
 {% endblock %}
 
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/projects-filter.css' %}">
+{% endblock %}
+
 {% block page_header %}
   <header class="page-header">
-    <h1 class="page-title">
-      Проекты
-    </h1>
+    <h1 class="page-title">Проекты</h1>
 
     {% if user.profile.role == 'manager' %}
-    <a class="button" href="{% url 'tasks:project_create' %}">
-      Добавить проект
-    </a>
+      <a class="button" href="{% url 'tasks:project_create' %}">
+        Добавить проект
+      </a>
     {% endif %}
   </header>
 {% endblock %}
 
 {% block content %}
-  <form class="filters-form" method="get" action="{% url 'tasks:project_list' %}">
-    <div class="filters-form__fields">
-      {% for field in filter_form %}
-        {% include 'components/field.html' with field=field %}
-      {% endfor %}
-    </div>
-    <div class="filters-form__actions">
-      <button class="button filters-form__button" type="submit">Применить</button>
-      <a class="filters-form__reset" href="{% url 'tasks:project_list' %}">Сбросить</a>
+
+  <form
+    class="projects-filter"
+    method="get"
+    action="{% url 'tasks:project_list' %}"
+  >
+    <div class="projects-filter__row">
+
+      <div class="projects-filter__item projects-filter__item--search">
+        <span class="projects-filter__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="16" height="16"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </span>
+
+        {{ filter_form.search }}
+      </div>
+
+      <div class="projects-filter__item projects-filter__item--select">
+        {{ filter_form.status }}
+      </div>
+
+      <div class="projects-filter__item projects-filter__item--select">
+        {{ filter_form.priority }}
+      </div>
+
+      <div class="projects-filter__item projects-filter__item--select">
+        {{ filter_form.assigned_to }}
+      </div>
+
+      <div class="projects-filter__item projects-filter__item--date">
+        <span class="projects-filter__date-label">
+          Дата создания с
+        </span>
+
+        {{ filter_form.date_from }}
+      </div>
+
+      <div class="projects-filter__item projects-filter__item--date">
+        <span class="projects-filter__date-label">
+          Дата создания по
+        </span>
+
+        {{ filter_form.date_to }}
+      </div>
+
+      <div class="projects-filter__actions">
+        <button class="projects-filter__submit" type="submit">
+          Применить
+        </button>
+
+        <a
+          class="projects-filter__reset"
+          href="{% url 'tasks:project_list' %}"
+        >
+          Сбросить
+        </a>
+      </div>
+
     </div>
   </form>
 
-  <section class="content-panel projects-panel" aria-label="Список проектов">
+  <section
+    class="content-panel projects-panel"
+    aria-label="Список проектов"
+  >
+
     {% for project in object_list %}
+
       {% include 'components/project_card.html' with project=project %}
+
     {% empty %}
+
       {% if request.GET %}
+
         {% include 'components/empty_state.html' with title='Ничего не найдено' text='Измени поисковый запрос или параметры фильтрации.' %}
+
       {% elif user.profile.role == 'manager' %}
+
         {% include 'components/empty_state.html' with title='Проекты пока не добавлены' text='Нажмите «Добавить проект», чтобы создать первый проект.' %}
+
       {% else %}
+
         {% include 'components/empty_state.html' with title='Проектов пока нет' text='Обратитесь к руководителю, чтобы вас добавили в группу.' %}
+
       {% endif %}
+
     {% endfor %}
+
   </section>
 
   {% include 'components/delete_confirm_modal.html' %}
+
 {% endblock %}
