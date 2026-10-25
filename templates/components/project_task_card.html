@@ -1,0 +1,55 @@
+<article class="project-task" id="task-{{ task.pk }}" data-project-task>
+  <div class="project-task__summary">
+    <div class="project-task__title-area">
+      <span class="task-priority task-priority--{{ task.priority }}" title="Приоритет: {{ task.get_priority_display }}" aria-label="Приоритет: {{ task.get_priority_display }}"></span>
+      <h3 class="project-task__title">{{ task.title }}</h3>
+    </div>
+    <div class="project-task__people">
+      <div class="project-task__person">
+        <span class="project-task__avatar" aria-hidden="true">{% if task.created_by %}{{ task.created_by.username|slice:':1'|upper }}{% else %}—{% endif %}</span>
+        <span class="project-task__person-text"><span class="project-task__hint">Создатель</span><span class="project-task__value">{{ task.created_by.username|default:'Не указан' }}</span></span>
+      </div>
+      <div class="project-task__person">
+        <span class="project-task__avatar project-task__avatar--executor" aria-hidden="true">{% if task.assigned_to %}{{ task.assigned_to.username|slice:':1'|upper }}{% else %}—{% endif %}</span>
+        <span class="project-task__person-text"><span class="project-task__hint">Исполнитель</span><span class="project-task__value">{{ task.assigned_to.username|default:'Не назначен' }}</span></span>
+      </div>
+    </div>
+    <div class="project-task__dates">
+      <div class="project-task__date"><span class="project-task__hint">Поставлена</span><time class="project-task__value" datetime="{{ task.created_at|date:'c' }}">{{ task.created_at|date:'d.m.Y H:i' }}</time></div>
+      <div class="project-task__date"><span class="project-task__hint">Дедлайн</span>{% if task.due_date %}<time class="project-task__due" datetime="{{ task.due_date|date:'Y-m-d' }}">{{ task.due_date|date:'d.m.Y' }}</time>{% else %}<span class="project-task__value">Не установлен</span>{% endif %}</div>
+    </div>
+    <div class="project-task__progress" aria-label="Подзадачи: {{ task.completed_subtasks_count }} из {{ task.subtasks_count }}">
+      <div class="project-task__progress-caption"><span>Подзадачи</span><strong>{{ task.completed_subtasks_count }}/{{ task.subtasks_count }}</strong></div>
+      <div class="project-task__track" role="progressbar" aria-label="Выполнение подзадач" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ task.subtasks_progress }}"><span style="width: {{ task.subtasks_progress }}%"></span></div>
+    </div>
+    <div class="project-task__actions">
+      {% if task.created_by == user or task.assigned_to == user %}
+        <a href="{% url 'tasks:task_edit' task.pk %}" class="project-task__action" aria-label="Редактировать {{ task.title }}" title="Редактировать">{% include 'components/edit_icon.html' %}</a>
+      {% endif %}
+      {% if task.created_by == user %}
+        <button class="project-task__action" type="button" aria-label="Удалить {{ task.title }}" title="Удалить" data-delete-open data-delete-title="задачу «{{ task.title }}»" data-delete-url="{% url 'tasks:task_delete' task.pk %}">{% include 'components/trash_icon.html' %}</button>
+      {% endif %}
+      <button class="project-task__action project-task__expand" type="button" aria-label="Показать подробности задачи {{ task.title }}" aria-expanded="false" aria-controls="project-task-details-{{ task.pk }}" data-project-task-toggle>{% include 'components/chevron_icon.html' %}</button>
+    </div>
+  </div>
+  <div class="project-task__details" id="project-task-details-{{ task.pk }}" hidden>
+    <div class="project-task__facts"><div><span class="project-task__hint">Статус</span><strong>{{ task.get_status_display }}</strong></div><div><span class="project-task__hint">Приоритет</span><strong>{{ task.get_priority_display }}</strong></div></div>
+    <div class="project-task__description"><h4>Описание</h4><p>{{ task.description|default:'Описание не добавлено.'|linebreaksbr }}</p></div>
+    <section class="project-task__subtasks" aria-label="Подзадачи {{ task.title }}">
+      <h4>Подзадачи <span>{{ task.completed_subtasks_count }}/{{ task.subtasks_count }}</span></h4>
+      <div class="project-task__subtask-list">
+        {% for subtask in task.subtasks.all %}
+          <form method="post" action="{% url 'tasks:subtask_toggle' subtask.pk %}">
+            {% csrf_token %}
+            <label class="project-task__subtask"><input type="checkbox" {% if subtask.is_completed %}checked{% endif %} onchange="this.form.submit()"><span {% if subtask.is_completed %}class="is-done"{% endif %}>{{ subtask.title }}</span></label>
+          </form>
+        {% empty %}<p class="project-task__subtask-empty">Подзадач пока нет.</p>{% endfor %}
+      </div>
+      <form class="project-task__add-subtask" method="post" action="{% url 'tasks:subtask_create' task.pk %}">
+        {% csrf_token %}
+        <label for="subtask-{{ task.pk }}">Новая подзадача</label>
+        <div class="project-task__add-row"><input id="subtask-{{ task.pk }}" type="text" name="title" maxlength="200" required placeholder="Название подзадачи"><button type="submit">Добавить</button></div>
+      </form>
+    </section>
+  </div>
+</article>

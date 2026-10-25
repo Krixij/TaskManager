@@ -1,0 +1,174 @@
+:root { --color-page-bg:#17191d; --color-sidebar-bg:#202328; --color-panel-bg:#25282e; --color-card-bg:#30343b; --color-text:#edf0f4; --color-text-muted:#b1bac7; --color-button-bg:#586d88; --color-button-hover:#6f84a0; --color-input-border:#505862; --color-focus:#9bb6df; color-scheme:dark; }
+body,.main,.login-page { background:#17191d; color:#edf0f4; }
+.sidebar { background:#202328 !important; color:#f3f5f8; }
+.sidebar__project-link,.sidebar__username { color:#bac4d2; }
+.sidebar__link.is-active,.sidebar__project-link.is-active { background:#3d4551; }
+.content-panel,.filters-form,.login-card,.calendar__grid,.calendar__day,.tasks-section--completed,.project-board__column { background:#25282e; color:#edf0f4; }
+.project-card,.task-card,.empty-state,.calendar-task,.delete-modal__window,.message,.alert,.project-task,.login-card input { background:#30343b; color:#edf0f4; }
+.project-card__description,.task-card__executor,.empty-state__text { color:#b1bac7; }
+.input,.textarea,.select,.form input,.form textarea,.form select,.filters-form .input,.filters-form .select { background:#333840; border-color:#535a65; color:#f3f5f8; color-scheme:dark; }
+input::placeholder,textarea::placeholder { color:#aab3c1; }
+select option { background:#333840; color:#edf0f4; }
+.page-title,.tasks-section__title,.project-board__heading h2 { color:#edf0f4; }
+.button,.pagination__link { background:#586d88; color:#fff; }
+.breadcrumb-link,.filters-form__reset { color:#bcd0ec; }
+.task-card__description { background:#282d34; color:#d3dbe5; }
+.task-card__delete-button,.task-card__edit-button,.task-card__action-button,.project-card__delete-button,.icon-toggle { color:#edf0f4; }
+.task-card__delete-button svg,.task-card__edit-button svg,.project-card__delete-button svg,.icon-toggle svg { color:inherit; }
+.my-tasks-filters__row { background:#25282e !important; border:1px solid #383c44; }
+.my-tasks-filters__item { background:#32363e !important; border-color:#4e5560 !important; }
+.my-tasks-filters__icon,.my-tasks-filters__item input,.my-tasks-filters__item select { color:#e3e8f0 !important; }
+.my-tasks-filters__item input::placeholder { color:#b3bcc9; }
+.my-tasks-filters__submit,.my-tasks-filters__reset { background:#586d88 !important; }
+.content-panel.my-tasks-panel { background:#25282e !important; }
+.my-tasks-panel .task-card--my-task { background:#30343b !important; border-color:#444a54 !important; color:#edf0f4; }
+.my-tasks-panel .task-card--my-task .task-card__title { color:#f3f5f8 !important; }
+.my-tasks-panel .my-task__project,.my-tasks-panel .my-task__meta-caption,.my-tasks-panel .my-task__description-label { color:#aeb8c6 !important; }
+.my-tasks-panel .my-task__author-name,.my-tasks-panel .my-task__created { color:#d8e0eb !important; }
+.my-tasks-panel .my-task__avatar { background:#475567 !important; color:#fff !important; }
+.my-tasks-panel .my-task__due { background:#424952 !important; color:#dce3ee !important; }
+.my-tasks-panel .my-task__due--set { background:#533737 !important; color:#ffd0c9 !important; }
+.my-tasks-panel .task-card--my-task .task-card__description { background:transparent !important; border-top-color:#484d55 !important; color:#d6deea !important; }
+.my-tasks-panel .my-task__status { color:#b8c3d1 !important; }
+
+.project-board__column { background:#25282e !important; }
+.project-task { background:#30343b !important; border-color:#484e58 !important; color:#edf0f4 !important; }
+.project-task__title,.project-task__value,.project-task__facts strong { color:#edf0f4 !important; }
+.project-task__hint,.project-task__progress-caption,.project-task__description p,.project-task__subtask,.project-task__add-subtask>label { color:#b8c3d1 !important; }
+.project-task__progress-caption strong { color:#e6efff !important; }
+.project-task__avatar { background:#465467 !important; color:#fff !important; }
+.project-task__avatar--executor { background:#3b5954 !important; color:#e4fff5 !important; }
+.project-task__due { background:#543738 !important; color:#ffd2c9 !important; }
+.project-task__track { background:#505762 !important; }
+.project-task__action { color:#e9edf4 !important; }
+.project-task__action:hover { background:#454b54 !important; }
+.project-task__details { border-top-color:#484e58 !important; }
+.project-task__add-row input { background:#383d45 !important; color:#f3f5f8 !important; border-color:#555e6a !important; }
+.project-task__add-row button { background:#586d88 !important; }
+
+.calendar__day { border-color:#4a5059; }
+.calendar__day-title { border-color:#4a5059; color:#edf0f4; }
+.calendar__day--today { background:#34383e; box-shadow:inset 0 4px 0 #869bb5; }
+.calendar__day--today .calendar__day-title { color:#d4e2f5; }
+.calendar__empty { color:#b1bac7; }
+.calendar-navigation__button { background:#586d88; }
+
+.delete-modal__title,.delete-modal__text { color:#edf0f4; }
+.delete-modal__overlay { background:rgba(0,0,0,.68); }
+@media (max-width:768px){ .main { background:#17191d; } }
+
+.task-card__edit-button,
+.task-card__delete-button,
+.task-card__action-button,
+.project-card__delete-button {
+    color: #D1D5DB !important;
+}
+
+.task-card__edit-button svg,
+.task-card__delete-button svg,
+.task-card__action-button svg,
+.project-card__delete-button svg {
+    color: inherit;
+}
+
+.task-card__edit-button svg *,
+.task-card__delete-button svg *,
+.task-card__action-button svg *,
+.project-card__delete-button svg * {
+    stroke: currentColor !important;
+}
+
+.task-card__edit-button:hover,
+.task-card__action-button:hover,
+.project-card__delete-button[href]:hover {
+    color: #93C5FD !important;
+    background: rgba(147, 197, 253, 0.12);
+}
+
+.task-card__delete-button:hover,
+.project-card__delete-button:not([href]):hover {
+    color: #F87171 !important;
+    background: rgba(248, 113, 113, 0.12);
+}
+
+.task-card__edit-button:hover svg *,
+.task-card__action-button:hover svg *,
+.project-card__delete-button[href]:hover svg *,
+.task-card__delete-button:hover svg *,
+.project-card__delete-button:not([href]):hover svg * {
+    stroke: currentColor !important;
+}
+.project-board button svg,
+.project-board a svg,
+.project-task-card button svg,
+.project-task-card a svg {
+    color: #D1D5DB !important;
+}
+
+.project-board button svg [stroke],
+.project-board a svg [stroke],
+.project-task-card button svg [stroke],
+.project-task-card a svg [stroke] {
+    stroke: currentColor !important;
+}
+
+.project-board .task-card__edit-button:hover svg,
+.project-board .task-card__action-button:hover svg,
+.project-task-card .task-card__edit-button:hover svg,
+.project-task-card .task-card__action-button:hover svg {
+    color: #93C5FD !important;
+}
+
+.project-board .task-card__delete-button:hover svg,
+.project-task-card .task-card__delete-button:hover svg {
+    color: #F87171 !important;
+}
+
+.project-board .icon-toggle svg,
+.project-task-card .icon-toggle svg {
+    color: #CBD5E1 !important;
+}
+
+.project-board .task-card__edit-button,
+.project-board .task-card__action-button,
+.project-board .task-card__delete-button {
+    color: #D1D5DB;
+}
+
+.project-board .task-card__edit-button:hover,
+.project-board .task-card__action-button:hover {
+    color: #93C5FD !important;
+    background: rgba(147, 197, 253, 0.14);
+}
+
+.project-board .task-card__delete-button:hover {
+    color: #F87171 !important;
+    background: rgba(248, 113, 113, 0.14);
+}
+
+.project-board .task-card__edit-button svg,
+.project-board .task-card__action-button svg,
+.project-board .task-card__delete-button svg {
+    color: inherit !important;
+}
+
+.project-board .task-card__edit-button:hover svg *,
+.project-board .task-card__action-button:hover svg * {
+    stroke: #93C5FD !important;
+}
+
+.project-board .task-card__delete-button:hover svg * {
+    stroke: #F87171 !important;
+}
+.project-board a[aria-label^="Редактировать"]:hover svg,
+.project-board a[aria-label^="Редактировать"]:hover svg * {
+    color: #93C5FD !important;
+    stroke: #93C5FD !important;
+}
+
+.project-board button[aria-label^="Удалить"]:hover svg,
+.project-board button[aria-label^="Удалить"]:hover svg * {
+    color: #F87171 !important;
+    stroke: #F87171 !important;
+}
+
