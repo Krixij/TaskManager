@@ -1,34 +1,47 @@
 {% extends 'layouts/main_layout.html' %}
+{% load static %}
 
-{% block title %}
-  {{ project.title }}
+{% block title %}{{ project.name }}{% endblock %}
+
+{% block extra_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/project-board.css' %}">
 {% endblock %}
 
 {% block page_header %}
-  <header class="page-header">
-    <h1 class="page-title">
-      <a class="breadcrumb-link" href="{% url 'tasks:project_list' %}">
-        Проекты
-      </a>
-      <span aria-hidden="true">&gt;</span>
-      <span>{{ project.name }}</span>
-    </h1>
-
-    <a class="button" href="{% url 'tasks:task_create' project.pk %}">
-      Добавить задачу
-    </a>
-  </header>
+<header class="page-header project-board-header">
+  <h1 class="page-title"><a class="breadcrumb-link" href="{% url 'tasks:project_list' %}">Проекты</a> <span aria-hidden="true">›</span> {{ project.name }}</h1>
+  <a class="button project-board-add" href="{% url 'tasks:task_create' project.pk %}">Добавить задачу</a>
+</header>
 {% endblock %}
 
 {% block content %}
-  <section class="content-panel tasks-panel" aria-label="Список задач проекта">
-    {% for task in tasks %}
-      {% include 'components/task_card.html' with task=task show_executor=True %}
-    {% empty %}
-      {% include 'components/empty_state.html' with title='Задачи пока не добавлены' text='Нажмите «Добавить задачу», чтобы создать первую задачу в проекте.' %}
-    {% endfor %}
+<div class="project-board" aria-label="Задачи проекта">
+  <section class="project-board__column" aria-labelledby="project-active-title">
+    <div class="project-board__heading"><h2 id="project-active-title">В работе</h2></div>
+    <div class="project-board__items">
+      {% for task in tasks %}
+        {% if task.status == 'in_progress' %}
+          {% include 'components/project_task_card.html' with task=task %}
+        {% endif %}
+      {% endfor %}
+    </div>
   </section>
+  <section class="project-board__column" aria-labelledby="project-done-title">
+    <div class="project-board__heading"><h2 id="project-done-title">Завершённые</h2></div>
+    <div class="project-board__items">
+      {% for task in tasks %}
+        {% if task.status == 'done' %}
+          {% include 'components/project_task_card.html' with task=task %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% include 'components/delete_confirm_modal.html' %}
+{% endblock %}
 
- {% include 'components/delete_confirm_modal.html' %}
-
+{% block extra_js %}
+  {{ block.super }}
+  <script src="{% static 'js/project-board.js' %}"></script>
 {% endblock %}

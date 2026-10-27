@@ -32,10 +32,27 @@
       {% endfor %}
 
       <div class="form-actions">
-        <button class="button" type="submit">
-          Сохранить
-        </button>
-      </div>
+  {% if object %}
+    <a
+      class="button button--secondary"
+      href="{% url 'tasks:project_detail' object.project.id %}"
+    >
+      Отмена
+    </a>
+  {% else %}
+    <a
+      class="button button--secondary"
+      href="{% url 'tasks:project_detail' project.id %}"
+    >
+      Отмена
+    </a>
+  {% endif %}
+
+  <button class="button" type="submit">
+    Сохранить
+  </button>
+</div>
     </form>
   </section>
+
 {% endblock %}

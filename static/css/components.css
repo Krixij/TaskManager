@@ -112,6 +112,12 @@
   border-radius:var(--radius-md);
   background:var(--color-card-bg)
 }
+/* Для перехода из календаря - подсветка задачи */
+.task-card--highlighted {
+  outline: 3px solid var(--color-button-bg);
+  outline-offset: 4px;
+  transition: outline-color var(--transition-base);
+}
 
 .task-card+.task-card {
   margin-top:32px
@@ -632,4 +638,113 @@
   .delete-modal__button {
     width:100%
   }
+}
+.task-card__header .task-card__title {
+  flex:1;
+  min-width:0;
+  margin-bottom:2px
+}
+
+.task-card__actions {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-shrink:0;
+  margin-left:auto
+}
+
+.task-card__action-button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  padding:6px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:var(--color-text);
+  transition:background-color var(--transition-base),transform var(--transition-base)
+}
+
+.task-card__action-button:hover {
+  background:rgba(0,0,0,.06)
+}
+
+.task-card__action-button:active {
+  transform:scale(.94)
+}
+
+.task-card__action-button svg {
+  width:26px;
+  height:26px;
+  flex-shrink:0
+}
+.task-card__edit-button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  padding:6px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:var(--color-text);
+  transition:background-color var(--transition-base),transform var(--transition-base)
+}
+
+.task-card__edit-button:hover {
+  background:rgba(0,0,0,.06)
+}
+
+.task-card__edit-button:active {
+  transform:scale(.94)
+}
+
+.task-card__edit-button svg {
+  width:26px;
+  height:26px;
+  flex-shrink:0
+}
+
+.my-tasks-panel .task-card--my-task .task-card__edit-button {
+  display:none
+}
+
+.my-tasks-panel .task-card--my-task.is-expanded .task-card__edit-button {
+  display:inline-flex
+}
+
+/* приоритет */
+
+.task-card__title {
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+
+.task-priority {
+  display:inline-flex;
+  flex-shrink:0;
+  width:18px;
+  height:12px;
+  border-radius:999px;
+  background:#d9d9d9
+}
+
+.task-priority--low {
+  background:#d9d9d9
+}
+
+.task-priority--medium {
+  background:#99bcd9
+}
+
+.task-priority--high {
+  background:#ff8d50
+}
+
+.task-priority--critical {
+  background:#ff0000
 }

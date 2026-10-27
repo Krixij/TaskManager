@@ -1,45 +1,65 @@
-<article
-  class="task-card task-card--my-task task-card--collapsible {% if expanded %}is-expanded{% else %}is-collapsed{% endif %}"
-  data-task-card="{{ task.pk }}"
->
+<article class="task-card task-card--my-task task-card--collapsible {% if expanded %}is-expanded{% else %}is-collapsed{% endif %}"
+         data-task-card="{{ task.pk }}" id="task-{{ task.id }}">
   <div class="task-card__summary">
-    <h3 class="task-card__title">
-      {{ task.title }}
-    </h3>
+    <div class="my-task__heading">
+      <span class="task-priority task-priority--{{ task.priority }}"
+            title="Приоритет: {{ task.get_priority_display }}"
+            aria-label="Приоритет: {{ task.get_priority_display }}"></span>
+      <div class="my-task__heading-text">
+        <h3 class="task-card__title">{{ task.title }}</h3>
+        <a class="my-task__project" href="{% url 'tasks:project_detail' task.project.pk %}#task-{{ task.id }}"
+           title="{{ task.project.name }}">{{ task.project.name }}</a>
+      </div>
+    </div>
+
+    <div class="my-task__author" title="Создатель: {% if task.created_by %}{{ task.created_by.username }}{% else %}Не указан{% endif %}">
+      <span class="my-task__avatar" aria-hidden="true">
+        {% if task.created_by %}{{ task.created_by.username|slice:':1'|upper }}{% else %}?{% endif %}
+      </span>
+      <span class="my-task__author-text">
+        <span class="my-task__meta-caption">Создатель</span>
+        <span class="my-task__author-name">{% if task.created_by %}{{ task.created_by.username }}{% else %}Не указан{% endif %}</span>
+      </span>
+    </div>
+
+    <div class="my-task__created">
+      <span class="my-task__meta-caption">Поставлена</span>
+      <time datetime="{{ task.created_at|date:'c' }}">{{ task.created_at|date:'d.m.Y H:i' }}</time>
+    </div>
+
+    <div class="my-task__due {% if task.due_date %}my-task__due--set{% endif %}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/>
+      </svg>
+      {% if task.due_date %}
+        <time datetime="{{ task.due_date|date:'Y-m-d' }}">{{ task.due_date|date:'d.m.Y' }}</time>
+      {% else %}<span>Без срока</span>{% endif %}
+    </div>
 
     <div class="task-card__summary-actions">
-      <button
-        class="task-card__delete-button"
-        type="button"
-        aria-label="Удалить задачу {{ task.title }}"
-        data-delete-open
-        data-delete-title="задачу «{{ task.title }}»"
-        data-delete-url="{% url 'tasks:task_delete' task.id %}"
-      >
-        {% include 'components/trash_icon.html' %}
-      </button>
-
-      <button
-        class="icon-toggle task-card__toggle {% if expanded %}is-expanded{% endif %}"
-        type="button"
-        data-toggle-task="{{ task.pk }}"
-        aria-label="{% if expanded %}Скрыть описание задачи{% else %}Показать описание задачи{% endif %}"
-        aria-expanded="{% if expanded %}true{% else %}false{% endif %}"
-      >
+      <a class="task-card__edit-button" href="{% url 'tasks:task_edit' task.id %}"
+         aria-label="Редактировать задачу {{ task.title }}">
+        {% include 'components/edit_icon.html' %}
+      </a>
+      {% if task.created_by == user %}
+        <button class="task-card__delete-button" type="button" aria-label="Удалить задачу {{ task.title }}"
+                data-delete-open data-delete-title="задачу «{{ task.title }}»"
+                data-delete-url="{% url 'tasks:task_delete' task.id %}">
+          {% include 'components/trash_icon.html' %}
+        </button>
+      {% endif %}
+      <button class="icon-toggle task-card__toggle {% if expanded %}is-expanded{% endif %}"
+              type="button" data-toggle-task="{{ task.pk }}"
+              aria-label="{% if expanded %}Скрыть описание задачи{% else %}Показать описание задачи{% endif %}"
+              aria-expanded="{% if expanded %}true{% else %}false{% endif %}"
+              aria-controls="my-task-description-{{ task.pk }}">
         {% include 'components/chevron_icon.html' %}
       </button>
     </div>
   </div>
-
-  <div class="task-card__description">
-    {{ task.description }}
-
-    {% if show_project %}
-      <p class="task-card__executor">
-        <a href="{% url 'tasks:project_detail' task.project.pk %}">
-          Проект: {{ task.project.name }}
-        </a>
-      </p>
-    {% endif %}
+  <div class="task-card__description" id="my-task-description-{{ task.pk }}">
+    <p class="my-task__description-label">Описание</p>
+    <p class="my-task__description-text">{{ task.description|default:'Описание не добавлено.'|linebreaksbr }}</p>
+    <p class="my-task__status">Статус: {{ task.get_status_display }} · Приоритет: {{ task.get_priority_display }}</p>
   </div>
 </article>

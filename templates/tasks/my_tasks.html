@@ -1,29 +1,72 @@
 {% extends 'layouts/main_layout.html' %}
+{% load static %}
 
 {% block title %}
   Мои задачи
 {% endblock %}
 
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/my-tasks-redesign.css' %}">
+{% endblock %}
+
 {% block page_header %}
-  <header class="page-header">
-    <h1 class="page-title">
-      Мои задачи
-    </h1>
-  {% comment %}
-    <a class="button" href="#">
-      Добавить задачу
-    </a>
-    {% endcomment %}
+  <header class="page-header page-header--my-tasks">
+    <h1 class="page-title">Мои задачи</h1>
   </header>
 {% endblock %}
 
 {% block content %}
+  <form class="my-tasks-filters" method="get" action="{% url 'tasks:my_tasks' %}">
+    <div class="my-tasks-filters__row">
+      {% if filter_form.search %}
+        <div class="my-tasks-filters__item my-tasks-filters__item--search">
+          <span class="my-tasks-filters__icon" aria-hidden="true">⌕</span>
+          {{ filter_form.search }}
+        </div>
+      {% endif %}
+
+      {% if filter_form.status %}
+        <div class="my-tasks-filters__item">
+          <span class="my-tasks-filters__icon" aria-hidden="true">◌</span>
+          {{ filter_form.status }}
+        </div>
+      {% endif %}
+
+      {% if filter_form.priority %}
+        <div class="my-tasks-filters__item">
+          <span class="my-tasks-filters__icon" aria-hidden="true">▮</span>
+          {{ filter_form.priority }}
+        </div>
+      {% endif %}
+
+      {% if filter_form.date_from %}
+        <div class="my-tasks-filters__item my-tasks-filters__item--date">
+          <span class="my-tasks-filters__icon" aria-hidden="true">🗓</span>
+          {{ filter_form.date_from }}
+        </div>
+      {% endif %}
+
+      {% if filter_form.date_to %}
+        <div class="my-tasks-filters__item my-tasks-filters__item--date">
+          <span class="my-tasks-filters__icon" aria-hidden="true">🗓</span>
+          {{ filter_form.date_to }}
+        </div>
+      {% endif %}
+
+      <button class="my-tasks-filters__submit" type="submit">
+        Применить
+      </button>
+
+      <a class="my-tasks-filters__reset" href="{% url 'tasks:my_tasks' %}">
+        Сбросить
+      </a>
+    </div>
+  </form>
+
   <section class="content-panel my-tasks-panel" aria-label="Мои задачи">
     <div class="tasks-section" data-task-section="active">
-      <div class="tasks-section__header">
-        <h2 class="tasks-section__title">
-          Активные
-        </h2>
+      <div class="tasks-section__header tasks-section__header--compact">
+        <h2 class="tasks-section__title">Активные</h2>
 
         <button
           class="icon-toggle tasks-section__toggle is-expanded"
@@ -38,11 +81,13 @@
 
       <div class="tasks-section__list">
         {% for task in active_tasks %}
-
-          {% include 'components/my_task_card.html' with task=task show_project=True expanded=forloop.last  %}
-
+          {% include 'components/my_task_card.html' with task=task show_project=True expanded=forloop.first %}
         {% empty %}
-          {% include 'components/empty_state.html' with title='Активных задач нет' text='Новые задачи появятся в этом разделе.' %}
+          {% if request.GET %}
+            {% include 'components/empty_state.html' with title='Задачи не найдены' text='Попробуйте изменить параметры фильтрации.' %}
+          {% else %}
+            {% include 'components/empty_state.html' with title='Активных задач нет' text='Новые задачи появятся в этом разделе.' %}
+          {% endif %}
         {% endfor %}
       </div>
     </div>
@@ -51,10 +96,8 @@
       class="tasks-section tasks-section--completed is-collapsed"
       data-task-section="completed"
     >
-      <div class="tasks-section__header">
-        <h2 class="tasks-section__title">
-          Завершенные
-        </h2>
+      <div class="tasks-section__header tasks-section__header--compact">
+        <h2 class="tasks-section__title">Завершенные</h2>
 
         <button
           class="icon-toggle tasks-section__toggle"
@@ -71,12 +114,15 @@
         {% for task in completed_tasks %}
           {% include 'components/my_task_card.html' with task=task show_project=True expanded=False %}
         {% empty %}
-          {% include 'components/empty_state.html' with title='Завершенных задач нет' %}
+          {% if request.GET %}
+            {% include 'components/empty_state.html' with title='Задачи не найдены' text='Попробуйте изменить параметры фильтрации.' %}
+          {% else %}
+            {% include 'components/empty_state.html' with title='Завершенных задач нет' %}
+          {% endif %}
         {% endfor %}
       </div>
     </div>
   </section>
 
- {% include 'components/delete_confirm_modal.html' %}
-
+  {% include 'components/delete_confirm_modal.html' %}
 {% endblock %}

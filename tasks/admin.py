@@ -1,12 +1,28 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Project, Task, GroupPeople
+from .models import Project, Task, GroupPeople, UserProfile, Subtask
 
-#НАстройка отображения пользователей в админке
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+    verbose_name = 'Профиль'
+    verbose_name_plural = 'Профиль'
+    fk_name = 'user'
+    extra = 0
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+#Настройка отображения пользователей в админке
 class CustomUserAdmin(UserAdmin):
-    list_display = ['username', 'email', 'first_name', 'last_name']
+    list_display = ['username', 'email', 'first_name', 'last_name', 'get_role']
     search_fields = ['username', 'email', 'first_name', 'last_name']
+    inlines = [UserProfileInline]
+
+    def get_role(self, obj):
+        return obj.profile.get_role_display()
+    get_role.short_description = 'Роль'
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
@@ -56,7 +72,7 @@ class GroupPeopleAdmin(admin.ModelAdmin):
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'created_by', 'created_at']
     list_filter = ['created_by', 'created_at']
-    search_fields = ['name']
+    search_fields = ['name', 'description']
     readonly_fields = ['created_at']
     raw_id_fields = ['group']
 
@@ -68,9 +84,9 @@ class ProjectAdmin(admin.ModelAdmin):
 #Админка дял задач
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'project', 'status', 'assigned_to', 'created_at']
-    list_filter = ['project', 'status']
-    search_fields = ['title']
+    list_display = ['id', 'title', 'project', 'status', 'priority', 'assigned_to','due_date', 'created_at']
+    list_filter = ['project', 'status', 'priority', 'assigned_to', 'created_at']
+    search_fields = ['title', 'description']
     list_editable = ['status', 'assigned_to']
     readonly_fields = ['created_at', 'created_by']
 
@@ -84,7 +100,7 @@ class TaskAdmin(admin.ModelAdmin):
             'fields': ('title', 'description', 'project'),
         }),
         ('Статус и назначение', {
-            'fields': ('status', 'assigned_to'),
+            'fields': ('status', 'priority', 'due_date','assigned_to'),
         }),
         ('Системная информация', {
             'fields': ('created_by', 'created_at'),
@@ -93,3 +109,12 @@ class TaskAdmin(admin.ModelAdmin):
 
     )
 # Register your models here.
+
+# Админка для подзадач
+@admin.register(Subtask)
+class SubtaskAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'task', 'is_completed', 'created_at']
+    list_filter = ['is_completed', 'created_at']
+    search_fields = ['title', 'task__title']
+    list_editable = ['is_completed']
+    readonly_fields = ['created_at']

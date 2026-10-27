@@ -1,0 +1,64 @@
+{% extends 'layouts/main_layout.html' %}
+
+{% block title %}Календарь{% endblock %}
+
+{% block page_header %}
+  <header class="calendar-header">
+    <h1 class="page-title">Календарь</h1>
+
+    <div class="calendar-navigation">
+      <a class="calendar-navigation__button"
+         href="?start={{ prev_week|date:'Y-m-d' }}"
+         aria-label="Предыдущая неделя">«</a>
+
+      <strong class="calendar-navigation__range">
+        {{ start_date|date:'d.m.Y' }} - {{ end_date|date:'d.m.Y' }}
+      </strong>
+
+      <a class="calendar-navigation__button"
+         href="?start={{ next_week|date:'Y-m-d' }}"
+         aria-label="Следующая неделя">»</a>
+    </div>
+
+    <a class="button" href="?start={{ today|date:'Y-m-d' }}">Сегодня</a>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <section class="calendar">
+    <div class="calendar__grid">
+      {% for day in days %}
+        <article class="calendar__day{% if day.is_today %} calendar__day--today{% endif %}">
+          <h2 class="calendar__day-title">
+            <span class="calendar__day-name">{{ day.name }}</span>
+            <span class="calendar__day-date">{{ day.date|date:'d.m' }}</span>
+
+            {% if day.tasks %}
+              <span class="calendar__day-count {% if day.tasks|length > 10 %}calendar__day-count--many{% endif %}" aria-label="Количество задач">
+                {% if day.tasks|length > 99 %}
+                  99+
+                {% else %}
+                  {{ day.tasks|length}}
+                {% endif %}
+              </span>
+            {% endif %}
+          </h2>
+
+          <div class="calendar__tasks">
+            {% for task in day.tasks %}
+              <a class="calendar-task"
+                 href="{% url 'tasks:project_detail' task.project.id %}#task-{{ task.id }}"
+                 title="{{ task.project.name }} — {{ task.title }}">
+                <span class="task-priority task-priority--{{ task.priority }}"
+                      aria-label="Приоритет: {{ task.get_priority_display }}"></span>
+                <span class="calendar-task__title">{{ task.title }}</span>
+              </a>
+            {% empty %}
+              <p class="calendar__empty ">Нет задач</p>
+            {% endfor %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

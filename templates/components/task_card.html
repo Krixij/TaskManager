@@ -1,20 +1,40 @@
-<article class="task-card task-card--with-delete">
+<article class="task-card task-card--with-delete" id="task-{{ task.id }}">
   <div class="task-card__content">
     <div class="task-card__header">
-      <h2 class="task-card__title">
-        {{ task.title }}
-      </h2>
+  <h2 class="task-card__title">
+  <span
+    class="task-priority task-priority--{{ task.priority }}"
+    aria-label="Приоритет: {{ task.get_priority_display }}"
+    title="Приоритет: {{ task.get_priority_display }}"
+  ></span>
 
-      <button
-        class="task-card__delete-button"
-        type="button"
-        aria-label="Удалить задачу {{ task.title }}"
-        data-delete-open
-        data-delete-title="задачу «{{ task.title }}»"
-        data-delete-url="{% url 'tasks:task_delete' task.id %}"
-      >
-        {% include 'components/trash_icon.html' %}
-      </button>
+  <span>
+    {{ task.title }}
+  </span>
+</h2>
+
+      <div class="task-card__actions">
+          {% if task.created_by == user or task.assigned_to == user %}
+            <a class="task-card__action-button"
+               href="{% url 'tasks:task_edit' task.id %}"
+               aria-label="Редактировать задачу {{ task.title }}">
+                {% include 'components/edit_icon.html' %}
+            </a>
+          {% endif %}
+
+          {% if task.created_by == user %}
+            <button
+              class="task-card__delete-button"
+              type="button"
+              aria-label="Удалить задачу {{ task.title }}"
+              data-delete-open
+              data-delete-title="задачу «{{ task.title }}»"
+              data-delete-url="{% url 'tasks:task_delete' task.id %}"
+            >
+              {% include 'components/trash_icon.html' %}
+            </button>
+          {% endif %}
+      </div>
     </div>
 
     {% if show_executor %}
@@ -28,12 +48,100 @@
     {% endif %}
 
     <p class="task-card__executor">
-      Статус: {{ task.get_status_display }}
+        Статус: {{ task.get_status_display }}<br>
+        {% if task.due_date %}
+          До: {{ task.due_date }}
+        {% endif %}
+    </p>
+
+      <p class="task-card__executor">
+
+    </p>
+
+    <p class="task-card__executor">
+      Приоритет: {{ task.get_priority_display }}
     </p>
 
     <div class="task-card__description">
       Описание:
       {{ task.description }}
     </div>
+
+    {% if show_subtasks %}
+      <section class="subtasks" aria-label="Подзадачи">
+        <h3>Подзадачи</h3>
+
+        <p>
+          Выполнено: {{ task.completed_subtasks_count }}
+          из {{ task.subtasks_count }}
+        </p>
+
+        <div
+          class="subtasks__progress"
+          role="progressbar"
+          aria-label="Прогресс выполнения подзадач"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="{{ task.subtasks_progress }}"
+          style="height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;"
+        >
+          <div
+            style="height: 8px; width: {{ task.subtasks_progress }}%; background: #22c55e;"
+          ></div>
+        </div>
+
+        <div class="subtasks__list">
+          {% for subtask in task.subtasks.all %}
+            <form
+              method="post"
+              action="{% url 'tasks:subtask_toggle' subtask.pk %}"
+            >
+              {% csrf_token %}
+
+              <label>
+                <input
+                  type="checkbox"
+                  {% if subtask.is_completed %}checked{% endif %}
+                  onchange="this.form.submit()"
+                >
+
+                {% if subtask.is_completed %}
+                  <s>{{ subtask.title }}</s>
+                {% else %}
+                  {{ subtask.title }}
+                {% endif %}
+              </label>
+            </form>
+          {% empty %}
+            <p>Подзадач пока нет.</p>
+          {% endfor %}
+        </div>
+
+        <form
+          method="post"
+          action="{% url 'tasks:subtask_create' task.pk %}"
+          class="subtasks__form"
+        >
+          {% csrf_token %}
+
+          <label for="subtask-title-{{ task.pk }}">
+            Новая подзадача
+          </label>
+
+          <input
+            type="text"
+            id="subtask-title-{{ task.pk }}"
+            name="title"
+            maxlength="200"
+            placeholder="Например, собрать данные"
+            required
+          >
+
+          <button type="submit" class="button">
+            Добавить
+          </button>
+        </form>
+      </section>
+    {% endif %}
   </div>
 </article>
